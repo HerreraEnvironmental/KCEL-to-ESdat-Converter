@@ -136,5 +136,5 @@ be named <specific_issue_description>\_dev.
 
 ## 💬 Contributors + Contact Information
 
-- [Tim Clark](https://github.com/clarkbar88)
+- [Nicholas Harris](https://github.com/nharris-1927)
 - [Nikki VandePutte](https://github.com/nvandeputte)
