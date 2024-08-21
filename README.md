@@ -6,10 +6,6 @@ King County Environmental Lab (KCEL) to ESdat Converter
 
 Repository for scripts related to KCEL to ESdat tool.
 
-------------------------------------------------------------------------------
-
-## ![](readme_figures/Herrera_lockup_4c.png)
-
 ------------------------------------------------------------------------
 
 # KCEL to ESdat Convertor Tool
