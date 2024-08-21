@@ -10,23 +10,6 @@ Repository for scripts related to KCEL to ESdat tool.
 
 ## ![](readme_figures/Herrera_lockup_4c.png)
 
-
-## Table of Contents
-
-- [Project Description](#Project-Description) *REQUIRED*
-- [Location in Herrera Database](#Location-in-Herrera-Database)
-  *REQUIRED*
-- [Requirements and Dependencies](#Requirements-and-Dependencies)
-- [Installation and Usage](#Installation-and-Usage)
-  - [Layout of directory and data](#Layout-of-directory-and-data)
-  - [Detailed description of data and
-    analysis](#Detailed-description-of-data-and-analysis)
-  - [Metadata](#Metadata) *REQUIRED*
-  - [Data discrepancies](#Data-discrepancies)
-- [Pull Requests](#Pull-Requests)
-- [Contributors and Contact
-  Information](#Contributors-and-Contact-Information) *REQUIRED*
-
 ------------------------------------------------------------------------
 
 # KCEL to ESdat Convertor Tool
