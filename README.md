@@ -1,8 +1,7 @@
 
 King County Environmental Lab (KCEL) to ESdat Converter
 ================
-<Nicholas Harris> (Derived from Nikki VandePutte's White Lake Tool)
-2024-08-21
+README last updated on 2024-08-21
 
 Repository for scripts related to KCEL to ESdat tool.
 
