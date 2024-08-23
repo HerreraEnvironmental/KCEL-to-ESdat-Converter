@@ -1,0 +1,97 @@
+
+/* main header */
+.skin-black .main-header {
+  max-height: 90px;
+}
+
+  /* logo */
+.skin-black .main-header .logo {
+background-color: #fff;
+padding-top: 10px;
+height: 90px;
+}
+
+/* logo when hovered */
+.skin-black .main-header .logo{
+  background-color: #fff;
+  width: 325px;
+}
+
+/* navbar (rest of the header) */
+.skin-black .main-header .navbar {
+  background-color: #fff;
+  margin-left: 325px;
+  
+}        
+
+/* navbar  */
+.skin-black .navbar-brand {
+  height: 25px;
+  padding-top:4px !important; 
+  padding-bottom:0 !important;
+  
+}  
+
+/* main sidebar */
+.skin-black .main-sidebar {
+  background-color: #1b435b;
+  padding-top: 90px;
+
+}
+
+/* active selected tab in the sidebarmenu */
+.skin-black .main-sidebar .sidebar .sidebar-menu .active a{
+  background-color: #1b435b;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* other links in the sidebarmenu */
+.skin-black .main-sidebar .sidebar .sidebar-menu a{
+  background-color: #1b435b;
+  color: #fff;
+  font-size: 20px; 
+  font-family: "Segoe UI Semi Light",sans-serif;
+  padding: 30px;
+}
+
+/* other links in the sidebarmenu when hovered */
+.skin-black .main-sidebar .sidebar .sidebar-menu a:hover{
+  background-color: #2dab84;
+}
+/* toggle button when hovered  */                    
+.skin-black .main-header .navbar .sidebar-toggle:hover{
+  background-color: #1b435b;
+}
+
+/* toggle button when hovered  */                    
+.skin-black .main-header .navbar .sidebar-toggle{
+  color: #1b435b;
+  height: 90px;
+  padding-top: 35px;
+}
+
+/* body */
+.skin-black .content-wrapper, .right-side {
+  background-color: #fff;
+  color: black;
+  font-family: 'Segoe UI', sans-serif;
+}
+/* headers & paragraph */
+h1  { font-family: 'Franklin Gothic', sans-serif;}
+h2  { font-family: 'Franklin Gothic', sans-serif; 
+      font-weight: bold; 
+      color: #1b435b;
+      font-size: 32px;
+    }
+h3  { font-family: 'Franklin Gothic', sans-serif;}
+h4  { font-family: 'Franklin Gothic', sans-serif;}
+h5  { font-family: 'Franklin Gothic', sans-serif;}
+h6  { font-family: 'Franklin Gothic', sans-serif;}
+p   { font-family: 'Segoe UI', sans-serif; 
+      font-size: 12px;
+}/* Checkbox label, prevent from wrapping text */
+input[type="checkbox"] ~ label { 
+    padding-left:1.4em;
+    display:inline-block;
+}

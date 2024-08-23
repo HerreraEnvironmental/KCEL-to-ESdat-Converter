@@ -24,7 +24,7 @@
 
 ## Import files
   # Raw files
-  files <- list.files("supporting-scripts/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
+  files <- list.files("./supporting-scripts/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
   dfs <- lapply(files, read.csv)
   # Chem codes
   chem_codes <- read.csv("supporting-scripts/KCEL/chem_code_lookup.csv")

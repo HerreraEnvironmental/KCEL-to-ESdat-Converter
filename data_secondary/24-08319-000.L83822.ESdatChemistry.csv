@@ -1,7 +1,0 @@
-"","OriginalChemName","Result","MDL","RDL","SampleCode","ChemCode","Prefix","Result_Unit","Total_or_Filtered","Result_Type","Method_Type","Method_Name","Extraction_Date","Anaysed_Date","Lab_Analysis_ID","Lab_Preperation_Batch_ID","Lab_Analysis_Batch_ID","EQL","ODL","Detection_Limit_Units","Lab_Comments","Lab_Qualifier","UCL","LCL","Dilution_Factor","Spike_Concentration","Spike_Measurement","Spike_Units"
-"1","Chlorophyll a",17.4,1,4,"L83822_L83822-1","42617-16-3","","ug/L","","REG","","EPA446.0","6/18/2024 18:00","7/2/2024 13:07","L83822-1","","",4,"","ug/L","","","","",2,"","",""
-"2","Pheophytin a",NA,2,10,"L83822_L83822-1","603-17-8","","ug/L","","REG","","EPA446.0","6/18/2024 18:00","7/2/2024 13:07","L83822-1","","",10,"","ug/L","","<MDL","","",2,"","",""
-"3","Sample Depth",0.5,NA,NA,"L83822_L83822-1",NA,"","m","","REG","","NONE","","","L83822-1","","",NA,"","m","","","","",1,"","",""
-"4","Sample Depth",3.5,NA,NA,"L83822_L83822-2",NA,"","m","","REG","","NONE","","","L83822-2","","",NA,"","m","","","","",1,"","",""
-"5","Total Phosphorus",0.0598,0.005,0.02,"L83822_L83822-1","7723-14-0","","mg/L","","REG","","SM4500-P-B,F","6/18/2024 9:58","6/26/2024 12:11","L83822-1","","",0.02,"","mg/L","","","","",1,"","",""
-"6","Total Phosphorus",0.092,0.005,0.02,"L83822_L83822-2","7723-14-0","","mg/L","","REG","","SM4500-P-B,F","6/18/2024 9:58","6/26/2024 12:13","L83822-2","","",0.02,"","mg/L","","","","",1,"","",""

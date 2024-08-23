@@ -22,14 +22,16 @@
   library(XML)
   library(yaml)
 
+  temp_dir <- tempdir()
+
 ## Import config.yaml file
-  config        <- read_yaml("config.yaml")
-  proj_num      <- config$`project info`$`project number`
-  proj_ID       <- config$`project info`$`project name`
+  config        <- read_yaml("supporting-scripts/KCEL/config.yaml")
+  proj_num      <- config$project_info$project_number
+  proj_ID       <- config$project_info$project_name
 
 ## Import files
   # Raw files
-  files         <- list.files("./data_raw", pattern = "*.csv")
+  files         <- list.files("./supporting-scripts/KCEL/data_raw", pattern = "*.csv")
   # Lab report names
   lab_reports   <- substring(files, 1, 6) # !! May change in the future !!
   # Extract dates and re-format
@@ -44,7 +46,7 @@
   dates         <- find_date(files)
   dates         <- as.character(dmy(dates))
   # Read in secondary files
-  files         <- list.files("./data_secondary")
+  files         <- list.files("./supporting-scripts/KCEL/data_secondary")
   # Build XML based on project
   for (i in 1:length(lab_reports)){
     report_date <- dates[i]
@@ -93,6 +95,6 @@
     # qual_2 = newXMLNode("Lab_Qualifier", parent = qualifier_node)
     # xmlAttrs(qual_2) = c(Description = "The concentration is below the reporting limit", Code = "J")
     
-    saveXML(doc, file = paste0("./data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
+    saveXML(doc, file = paste0("./supporting-scripts/KCEL/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
     
   }
