@@ -1,0 +1,14 @@
+SampleCode,ChemCode,OriginalChemName,Prefix,Result,Result_Unit,Total_or_Filtered,Result_Type,Method_Type,Method_Name,Extraction_Date,Analysed_Date,Lab_Analysis_ID,Lab_Preperation_Batch_ID,Lab_Analysis_Batch_ID,EQL,RDL,MDL,ODL,Detection_Limit_Units,Lab_Comments,Lab_Qualifier,UCL,LCL,Dilution_Factor,Spike_Concentration,Spike_Measurement,Spike_Units
+24-03693_12861,DRO,Diesel,<,0.25,mg/L,T,REG,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.1,0.25,0.1,,mg/L,,,,,1,,,
+24-03693_12861,Heavy_Oil,Heavy Oils,<,0.5,mg/L,T,REG,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.2,0.5,0.2,,mg/L,,,,,1,,,
+24-03693_12861,Faecal_Coliform,Faecal Coliforms,,116,/100mL,T,REG,Total,SM_9222-DG,2/28/2024,2/29/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,,,,1,,,
+24-03693_12861,E. Coli,E. Coli,,116,/100mL,T,REG,Total,SM_9222-DG,2/28/2024,3/1/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,,,,1,,,
+24-03693_12682,DRO,Diesel,<,0.25,mg/L,T,REG,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.1,0.25,0.1,,mg/L,,,,,1,,,
+24-03693_12682,Heavy_Oil,Heavy Oils,<,0.5,mg/L,T,REG,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.2,0.5,0.2,,mg/L,,,,,1,,,
+24-03693_12682,Faecal_Coliform,Faecal Coliforms,,2,/100mL,T,REG,Total,SM_9222-DG,2/28/2024,2/29/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,C,,,1,,,
+24-03693_12682,E. Coli,E. Coli,,2,/100mL,T,REG,Total,SM_9222-DG,2/28/2024,3/1/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,C,,,1,,,
+24-03693_OC3-2024-6_BLK,DRO,Diesel,<,0.25,mg/L,T,SC,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.1,0.25,0.1,,mg/L,,,,,1,,,
+24-03693_OC3-2024-6_LFB,DRO,Diesel,,112,%,T,SC,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.1,0.25,0.1,,mg/L,,,130,70,1,1,1.12,mg/L
+24-03693_OC3-2024-6_DUP,DRO,Diesel,<,0.25,mg/L,T,SC,Total,NWTPH-Dx,3/4/2024,3/4/2024,24-03693,24-03693,OC3-2024-6,0.1,0.25,0.1,,mg/L,,,,,1,,,
+24-03693_MBMF-240228_BLK,E. Coli,E. Coli,<,2,/100mL,T,SC,Total,SM_9222-DG,2/28/2024,3/1/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,,,,1,,,
+24-03693_MBMF-240228_DUP,E. Coli,E. Coli,,270,/100mL,T,REG,Total,SM_9222-DG,2/28/2024,3/1/2024,24-03693,24-03693,MBMF-240228,1,2,1,,/100mL,,,,,1,,,

@@ -1,0 +1,14 @@
+SampleCode,Sampled_Date_Time,Field_ID,Blank1,Depth,Blank2,Matrix_Type,Sample_Type,Parent_Sample,Blank3,SDG,Lab_Name,Lab_SampleID,Lab_Comments,Lab_Report_Number
+24-03693_12861,2/28/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-03693_12861,,24-03693
+24-03693_12861,2/28/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-03693_12861,,24-03693
+24-03693_12861,2/28/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-03693_12861,,24-03693
+24-03693_12861,2/28/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-03693_12861,,24-03693
+24-03693_12682,2/28/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-03693_12682,,24-03693
+24-03693_12682,2/28/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-03693_12682,,24-03693
+24-03693_12682,2/28/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-03693_12682,,24-03693
+24-03693_12682,2/28/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-03693_12682,,24-03693
+24-03693_OC3-2024-6_BLK,3/4/2024,OC3-2024-6_BLK,,,,Water,MB,,,,Exact Scientific,OC3-2024-6_BLK,,24-03693
+24-03693_OC3-2024-6_LFB,3/4/2024,OC3-2024-6_LFB,,,,Water,LCS,,,,Exact Scientific,OC3-2024-6_LFB,,24-03693
+24-03693_OC3-2024-6_DUP,3/4/2024,OC3-2024-6_DUP,,,,Water,LAB_D,24-03237_11212,,,Exact Scientific,OC3-2024-6_DUP,,24-03693
+24-03693_MBMF-240228_BLK,2/28/2024,MBMF-240228_BLK,,,,Water,MB,,,,Exact Scientific,MBMF-240228_BLK,,24-03693
+24-03693_MBMF-240228_DUP,2/28/2024,MBMF-240228_DUP,,,,Water,LAB_D,24-03649_12708,,,Exact Scientific,MBMF-240228_DUP,,24-03693

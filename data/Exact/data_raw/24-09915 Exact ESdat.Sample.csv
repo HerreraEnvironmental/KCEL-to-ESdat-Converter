@@ -1,0 +1,17 @@
+SampleCode,Sampled_Date_Time,Field_ID,Blank1,Depth,Blank2,Matrix_Type,Sample_Type,Parent_Sample,Blank3,SDG,Lab_Name,Lab_SampleID,Lab_Comments,Lab_Report_Number
+24-09915_34091,6/7/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-09915_34091,,24-09915
+24-09915_34091,6/7/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-09915_34091,,24-09915
+24-09915_34091,6/7/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-09915_34091,,24-09915
+24-09915_34091,6/7/2024,AS-IN,,,,Water,Normal,,,,Exact Scientific,24-09915_34091,,24-09915
+24-09915_34092,6/7/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-09915_34092,,24-09915
+24-09915_34092,6/7/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-09915_34092,,24-09915
+24-09915_34092,6/7/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-09915_34092,,24-09915
+24-09915_34092,6/7/2024,AS-OUT,,,,Water,Normal,,,,Exact Scientific,24-09915_34092,,24-09915
+24-09915_34093,6/7/2024,AS-IN_QA,,,,Water,Normal,,,,Exact Scientific,24-09915_34093,,24-09915
+24-09915_34093,6/7/2024,AS-IN_QA,,,,Water,Normal,,,,Exact Scientific,24-09915_34093,,24-09915
+24-09915_34093,6/7/2024,AS-IN_QA,,,,Water,Normal,,,,Exact Scientific,24-09915_34093,,24-09915
+24-09915_34093,6/7/2024,AS-IN_QA,,,,Water,Normal,,,,Exact Scientific,24-09915_34093,,24-09915
+24-09915_OC3-2024-14_BLK,6/10/2024,OC3-2024-14_BLK,,,,Water,MB,,,,Exact Scientific,OC3-2024-14_BLK,,24-09915
+24-09915_OC3-2024-14_LFB,6/10/2024,OC3-2024-14_LFB,,,,Water,LCS,,,,Exact Scientific,OC3-2024-14_LFB,,24-09915
+24-09915_OC3-2024-14_DUP,6/10/2024,OC3-2024-14_DUP,,,,Water,LAB_D,24-09915_34093,,,Exact Scientific,OC3-2024-14_DUP,,24-09915
+24-09915_MBMF-240607_BLK,6/7/2024,MBMF-240607_BLK,,,,Water,MB,,,,Exact Scientific,MBMF-240607_BLK,,24-09915
