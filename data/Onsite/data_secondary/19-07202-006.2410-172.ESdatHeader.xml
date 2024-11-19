@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ESdat schemaVersion="1.0.1" fileType="eLabReport" generated="2013-05-09T10:20:17+10:00" xmlns="http://www.escis.com.au/2013/XML">
+  <LabReport Lab_Signatory="David Baumeister" Lab_Name="OnSite Environmental" Project_Number="19-07202-006" Project_ID="19-07202-006" Date_Reported="2024-11-19" Lab_Report_Number="2410-172">
+    <Associated_Files xmlns="http://www.escis.com.au/2013/XML/LabReport">
+      <File File_Type="ESdat_Sample_CSV" File_Name="19-07202-006.2410-172.ESdatSample.csv"/>
+      <File File_Type="ESdat_Chemistry_CSV" File_Name="19-07202-006.2410-172.ESdatChemistry.csv"/>
+    </Associated_Files>
+    <Copies_Sent_To xmlns="http://www.escis.com.au/2013/XML/LabReport"/>
+    <eCoCs xmlns="http://www.escis.com.au/2013/XML/LabReport">
+      <eCoC CoC_Number="2410-172">
+        <Lab_Requests>
+          <Lab_Request Version="1" Number="1"/>
+        </Lab_Requests>
+      </eCoC>
+    </eCoCs>
+  </LabReport>
+</ESdat>
