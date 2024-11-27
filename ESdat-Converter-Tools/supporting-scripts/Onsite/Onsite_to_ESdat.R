@@ -28,7 +28,7 @@
   proj_ID       <- config$project_info$project_name
 
   #TODO: incorporate into config.yaml
-  sites <- c("AS-IN", "AS-OUT")
+  #sites <- c("AS-IN", "AS-OUT")
   
 ## Import files
   # Raw files by lab
@@ -40,7 +40,7 @@
   ## Retrieve lab report names
   lab_reports <- unique(substring(list.files("./data/Onsite/data_raw", pattern = "*.csv"), 1, 8))
   
-  ## Combine Exact and ARI EDDs if applicable, move and rename for consistency
+  ## Combine Onsite and AmTest EDDs if applicable, move and rename for consistency
   for(i in 1:length(lab_reports)){
     lab_report <- lab_reports[i]
     
@@ -65,9 +65,9 @@
              Method_Name = Method.Name,
              Extraction_Date = Extraction.Date,
              Analysed_Date = Analysed.Date,
-             Lab_Analysis_ID = Lab.Analysis.ID,
-             Lab_Preperation_Batch_ID = Lab.Preperation.Batch.ID,
-             Lab_Analysis_Batch_ID = Lab.Analysis.Batch.ID,
+             Lab_Analysis_ID = substr(Lab.Analysis.ID, start=1, stop=20),
+             Lab_Preperation_Batch_ID = substr(Lab.Preperation.Batch.ID, start=1, stop=20),
+             Lab_Analysis_Batch_ID = substr(Lab.Analysis.Batch.ID, start=1, stop=20),
              EQL = EQL,
              RDL = RDL,
              MDL = MDL,
@@ -79,7 +79,7 @@
              LCL = LCL,
              Dilution_Factor = Dilution.Factor,
              Spike_Concentration = Spike.Concentration,
-             Spike_Units = Spike.Units,
+             Spike_Units = ifelse(Spike.Units=="mg eqt. CaCO3/L (ppm)", "mg/L", Spike.Units),
              Spike_Measurement = Spike.Measurement,
              .keep = "none")
     # join with lookup for chemcode
@@ -104,6 +104,7 @@
              Lab_Report_Number = Lab.Report.Number,
              .keep = 'none')
     onsite_sample <- distinct(onsite_sample)
+
     
     ## if there's an associated Amtest file, combine with Onsite file
     if (any(grep(lab_report, Amtest_files))) {

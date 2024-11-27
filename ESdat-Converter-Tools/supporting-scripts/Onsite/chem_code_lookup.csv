@@ -1,10 +1,10 @@
 ﻿OriginalChemName,ChemCode
 Total Phosphorus,7723-14-0
 "Conductivity, Field",Conductivity @ 25oC
-"Copper, Dissolved, ICP-MS",7440-50-8
+Copper,7440-50-8
 "Dissolved Oxygen, Field",Dissolved Oxygen
 E. Coli,E. Coli
-"Hardness, Calc",CarbHard_as_CaCO3
+Hardness,CarbHard_as_CaCO3
 Total Nitrate + Nitrite,NO3+NO2 (as N)
 Orthophosphate Phosphorus,Ortho Phosphorus
 "pH, Field",pH (Field)
@@ -13,4 +13,4 @@ Total Nitrogen,7727-37-9
 Total Kjeldahl Nitrogen,TKN
 Total Suspended Solids,TSS
 Turbidity,Turb
-"Zinc, Dissolved, ICP-MS",7440-66-6
+Zinc,7440-66-6
