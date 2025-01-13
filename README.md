@@ -1,6 +1,6 @@
 
-King County Environmental Lab (KCEL) to ESdat Converter
-================
+# King County Environmental Lab (KCEL) to ESdat Converter
+
 README last updated on 2024-08-21
 
 Repository for scripts related to KCEL to ESdat tool.
@@ -11,7 +11,7 @@ Repository for scripts related to KCEL to ESdat tool.
 
 ### Tool to convert KCEL EDDs to ESdat XML format
 
----------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 ## 🔧 Pull Requests
 
@@ -25,3 +25,9 @@ be named <specific_issue_description>\_dev.
 
 - [Nicholas Harris](https://github.com/nharris-HEC)
 - [Nikki VandePutte](https://github.com/nvandeputte)
+
+## Steps for Converting Exact Scientific EDDs (desktop)
+
+1. copy CSV and PDF files into {repo}/data/Exact/data_raw
+1. Run the {repo}/ESdat-Convert-Tools/supporing-scipts/Exact/ESdat_prep.R script
+1. Look for your zipped up EDDs in the {repo}/zips/
