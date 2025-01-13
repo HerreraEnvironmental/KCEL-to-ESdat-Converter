@@ -26,8 +26,10 @@ be named <specific_issue_description>\_dev.
 - [Nicholas Harris](https://github.com/nharris-HEC)
 - [Nikki VandePutte](https://github.com/nvandeputte)
 
-## Steps for Converting Exact Scientific EDDs (desktop)
+## Steps for Converting EDDs (desktop)
+This tool is a work in progress. Currently the app only converts KCEL EDDs, but there are also scripts for Onsite+Amtest and Exact Scientific. Follow the steps below to use the scripts for the additional labs.
 
-1. copy CSV and PDF files into {repo}/data/Exact/data_raw
-1. Run the {repo}/ESdat-Convert-Tools/supporing-scipts/Exact/ESdat_prep.R script
+1. Copy CSV and PDF files into {repo}/data/{lab}/data_raw
+1. Update the config.yaml file with project-specific ESdat details
+1. Run the {repo}/ESdat-Convert-Tools/supporing-scipts/{lab}/ESdat_prep.R script
 1. Look for your zipped up EDDs in the {repo}/zips/
