@@ -26,6 +26,7 @@
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/Onsite/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
+  proj_site     <- config$project_info$project_site
 
   #TODO: incorporate into config.yaml
   #sites <- c("AS-IN", "AS-OUT")
@@ -36,6 +37,8 @@
   Amtest_files <- list.files("./data/Amtest/data_raw", full.names = TRUE, pattern = "AmTest")
   
   chem_lookup <- read.csv("ESdat-Converter-Tools/supporting-scripts/Onsite/chem_code_lookup.csv")
+  locations <- read.csv("ESdat_locations.csv") %>%
+    filter(Site_ID == proj_site)
   
   ## Retrieve lab report names
   lab_reports <- unique(substring(list.files("./data/Onsite/data_raw", pattern = "*.csv"), 1, 8))
@@ -89,6 +92,7 @@
     onsite_sample <- onsite_report %>%
       mutate(SampleCode = Sample.Code,
              Sampled_Date_Time = Sampled.Date.Time,
+             Site_ID = proj_site,
              Field_ID = Field.ID,
              Blank1 = NA,
              Depth = NA,
@@ -104,7 +108,6 @@
              Lab_Report_Number = Lab.Report.Number,
              .keep = 'none')
     onsite_sample <- distinct(onsite_sample)
-
     
     ## if there's an associated Amtest file, combine with Onsite file
     if (any(grep(lab_report, Amtest_files))) {
@@ -148,10 +151,11 @@
         mutate(SampleCode = Sample_ID,
                Sampled_Date_Time = paste0(Field_Collection_Start_Date, " ", Field_Collection_Start_Time),
                Field_ID = Study_Specific_Location_ID,
+               Site_ID = proj_site,
                Blank1 = NA,
                Depth = NA,
                Blank2 = NA,
-               Matrix_Type = Sample_Matrix,
+               Matrix_Type = ifelse(Sample_Matrix == 'W', 'SW', Sample_Matrix),
                Sample_Type = "Normal",
                Parent_Sample = NA,
                Blank3 = NA,
@@ -170,13 +174,28 @@
       full_sample <- full_join(onsite_sample, amtest_sample) %>%
         mutate(Sample_Type = ifelse(grepl("QA", Field_ID), "Field_D", Sample_Type))
       
-      write.csv(full_sample, paste0("./data/Onsite/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+      full_sample<-full_sample%>%mutate(Field_ID = gsub('2025', '2024', Field_ID))
+      ## assign field ID
+      samp_date<-gsub("-", "", substring(mdy_hm(onsite_sample$Sampled_Date_Time)[1], 1, 10))
+      locations <- locations %>%
+        mutate(Field_ID = paste0(Field_ID, "-", samp_date))
+      
+      full_sample<-left_join(full_sample, locations) %>%
+        mutate(Location_Code = ifelse(is.na(Location_Code), '', Location_Code))
+      
+      write.csv(full_sample, paste0("./data/Onsite/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = '')
       
     } else {
       
+      ## assign field ID
+      samp_date<-gsub("-", "", substring(mdy_hm(onsite_sample$Sampled_Date_Time)[1], 1, 10))
+      locations <- locations %>%
+        mutate(Field_ID = paste0(Field_ID, "-", samp_date))
+      onsite_sample <- left_join(onsite_sample, locations)
+      
       write.csv(onsite_chem, paste0("./data/Onsite/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
       
-      write.csv(onsite_sample, paste0("./data/Onsite/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+      write.csv(onsite_sample, paste0("./data/Onsite/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = '')
     }
   }
   

@@ -4,5 +4,6 @@
 
 
 project_info: 
-  project_number: "19-07202-006" # USE PROJ # FROM ESDAT
+  project_number: "19-07202-000" # USE PROJ # FROM ESDAT
   project_name:   "Bellevue Utilities Environmental Monitoring" # USE PROJ NAME FROM ESDAT
+  project_site: "BU-Monitoring" #USE PROJ SITE FROM ESDAT
