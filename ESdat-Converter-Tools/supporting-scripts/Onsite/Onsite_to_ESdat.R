@@ -155,7 +155,7 @@
                Blank1 = NA,
                Depth = NA,
                Blank2 = NA,
-               Matrix_Type = ifelse(Sample_Matrix == 'W', 'SW', Sample_Matrix),
+               Matrix_Type = ifelse(Sample_Matrix == 'W', 'Water', Sample_Matrix),
                Sample_Type = "Normal",
                Parent_Sample = NA,
                Blank3 = NA,
