@@ -24,18 +24,18 @@
 
 ## Import files
   # Raw files
-  files <- list.files("./supporting-scripts/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
+  files <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
   dfs <- lapply(files, read.csv)
   # Chem codes
-  chem_codes <- read.csv("supporting-scripts/KCEL/chem_code_lookup.csv")
+  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
 
 ## Import config.yaml file
-  config        <- read_yaml("supporting-scripts/KCEL/config.yaml")
+  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/KCEL/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
   
 ## Retrieve lab report names
-  lab_reports <- substring(list.files("./supporting-scripts/KCEL/data_raw", pattern = "*.csv"), 1, 6)
+  lab_reports <- substring(list.files("data/KCEL/data_raw", pattern = "*.csv"), 1, 6)
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
   for(i in 1:length(files)){
@@ -47,7 +47,7 @@
     sample <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", Lab.ID),
              Sampled_Date_Time = Collect.Date,
-             Field_ID = "",
+             Field_ID = Locator,
              Blank1 = "",
              Depth = Depth.m.,
              Blank2 = "",
@@ -62,7 +62,7 @@
              Lab_Report_Number = lab_report,
              .keep = "none")
   # Export Sample file
-    write.csv(sample, paste0("./supporting-scripts/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
@@ -72,12 +72,12 @@
              Prefix = "",
              Result = Result,
              Result_Unit = Units,
-             Total_or_Filtered = "",
+             Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
              Result_Type = "REG",
              Method_Type = "",
              Method_Name = Method,
              Extraction_Date = Preparation.Date,
-             Anaysed_Date = Analysis.Date,
+             Anaysed_Date = mdy_hm(Analysis.Date),
              Lab_Analysis_ID = Lab.ID,
              Lab_Preperation_Batch_ID = "",
              Lab_Analysis_Batch_ID = "",
@@ -95,16 +95,19 @@
              Spike_Measurement = "",
              Spike_Units = "",
              .keep = "none")
+    # remove unnecessary fields
+    chemistry <- chemistry %>%
+      filter(!OriginalChemName %in% c('Field Personnel', 'Sampling Method', 'Sample Function'))
     
     chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%
       mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
       select(-c(ChemCode.x, ChemCode.y))
   # Export Chemistry file
-    write.csv(chemistry, paste0("./supporting-scripts/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
   }
   
 ## Import PDF lab reports and copy to secondary folder
-  pdfs <- list.files("./supporting-scripts/KCEL/data_raw", full.names = TRUE, pattern = "*.pdf")
+  pdfs <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.pdf")
   for (i in 1:length(pdfs)){
-    file.copy(pdfs[i], paste0("./supporting-scripts/KCEL/data_secondary/", proj_num, ".", lab_reports[i], ".ESdat.pdf"))
+    file.copy(pdfs[i], paste0("data/KCEL/data_secondary/", proj_num, ".", lab_reports[i], ".ESdat.pdf"))
     }

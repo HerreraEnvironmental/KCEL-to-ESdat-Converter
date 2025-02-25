@@ -25,28 +25,30 @@
   temp_dir <- tempdir()
 
 ## Import config.yaml file
-  config        <- read_yaml("supporting-scripts/KCEL/config.yaml")
+  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/KCEL/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
 
 ## Import files
   # Raw files
-  files         <- list.files("./supporting-scripts/KCEL/data_raw", pattern = "*.csv")
+  files         <- list.files("data/KCEL/data_raw", pattern = "*.csv")
   # Lab report names
   lab_reports   <- substring(files, 1, 6) # !! May change in the future !!
   # Extract dates and re-format
-  find_date     <- function(my_files){
-    proj_name_str_length        <- as.numeric(nchar(proj_ID))
-    position_to_date_start      <- proj_name_str_length + 12 # Num of chars in report name (6) +6 for white space and misc. chars
-    position_to_date_end        <- position_to_date_start + 7
-    my_dates                    <- substring(my_files, position_to_date_start, position_to_date_end)
-    my_dates                    <- gsub(" ", "", my_dates, fixed = T) # Remove whitespace as necessary
-  }
-  
-  dates         <- find_date(files)
-  dates         <- as.character(dmy(dates))
+  # find_date     <- function(my_files){
+  #   proj_name_str_length        <- as.numeric(nchar(proj_ID))
+  #   position_to_date_start      <- proj_name_str_length + 22 # Num of chars in report name (6) +6 for white space and misc. chars
+  #   position_to_date_end        <- position_to_date_start + 7
+  #   my_dates                    <- substring(my_files, position_to_date_start, position_to_date_end)
+  #   my_dates                    <- gsub(" ", "", my_dates, fixed = T) # Remove whitespace as necessary
+  # }
+
+  # dates         <- find_date(files)
+  # dates         <- substring(files, 24, 30)
+  # dates         <- as.character(dmy(dates))
+  dates           <- as.character(Sys.Date())
   # Read in secondary files
-  files         <- list.files("./supporting-scripts/KCEL/data_secondary")
+  files         <- list.files("data/KCEL/data_secondary")
   # Build XML based on project
   for (i in 1:length(lab_reports)){
     report_date <- dates[i]
@@ -95,6 +97,6 @@
     # qual_2 = newXMLNode("Lab_Qualifier", parent = qualifier_node)
     # xmlAttrs(qual_2) = c(Description = "The concentration is below the reporting limit", Code = "J")
     
-    saveXML(doc, file = paste0("./supporting-scripts/KCEL/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
+    saveXML(doc, file = paste0("data/KCEL/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
     
   }
