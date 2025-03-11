@@ -7,7 +7,7 @@
 ## Project #:           N/A
 ## Task # (optional):   N/A
 ## ---------------------------
-## Notes: This script is ran in conjunction with the ESdat_prep.R and KCEL_to_ESdat.R scripts
+## Notes: This script is ran in conjunction with the ESdat_prep.R and Exact_to_ESdat.R scripts
 ##
 ##    *** Have you updated the config.yaml file? Please do so before running any scripts ***
 ##        
@@ -33,19 +33,12 @@
 ## Import files
   # Raw files
   files         <- list.files("./data/Exact/data_raw", pattern = "*.csv")
-  # Lab report names
-  lab_reports   <- unique(substring(files, 1, 8)) # !! May change in the future !!
-  # Extract dates and re-format
-  # find_date     <- function(my_files){
-  #   proj_name_str_length        <- as.numeric(nchar(proj_ID))
-  #   position_to_date_start      <- proj_name_str_length + 12 # Num of chars in report name (6) +6 for white space and misc. chars
-  #   position_to_date_end        <- position_to_date_start + 7
-  #   my_dates                    <- substring(my_files, position_to_date_start, position_to_date_end)
-  #   my_dates                    <- gsub(" ", "", my_dates, fixed = T) # Remove whitespace as necessary
-  # }
   
-  # dates         <- find_date(files)
-  # dates         <- as.character(dmy(dates))
+  # Lab report names
+  # TODO not sure if this is a typical file name, might need adjustment
+  lab_reports <- gsub("LandscapeExcelExport_", "",
+                      gsub(".xls", "", list.files("data/Exact/data_raw", pattern = "*.xls")))
+  
   # Read in secondary files
   files         <- list.files("./data/Exact/data_secondary")
   # Build XML based on project
@@ -64,7 +57,7 @@
                        generated="2013-05-09T10:20:17+10:00",
                        xmlns="http://www.escis.com.au/2013/XML")              
     report_node = newXMLNode("LabReport", parent=root)
-    xmlAttrs(report_node) = c(Lab_Signatory = "Kelley Van Hees",
+    xmlAttrs(report_node) = c(Lab_Signatory = "Katie Hallaian",
                               Lab_Name = "Exact Scientific",
                               Project_Number = proj_num,
                               Project_ID = proj_num,
@@ -87,14 +80,6 @@
     requests_node = newXMLNode("Lab_Requests", parent = ecoc)
     request = newXMLNode("Lab_Request", parent = requests_node)
     xmlAttrs(request) = c(Version = "1", Number = "1")
-    
-    
-    # qualifier_node = newXMLNode("Lab_Qualifiers", parent = report_node)
-    # xmlAttrs(qualifier_node) = c(xmlns = "http://www.escis.com.au/2013/XML/LabReport")
-    # qual_1 = newXMLNode("Lab_Qualifier", parent = qualifier_node)
-    # xmlAttrs(qual_1) = c(Description = "The concentration is below the detection limit", Code = "U")
-    # qual_2 = newXMLNode("Lab_Qualifier", parent = qualifier_node)
-    # xmlAttrs(qual_2) = c(Description = "The concentration is below the reporting limit", Code = "J")
     
     saveXML(doc, file = paste0("./data/Exact/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
     

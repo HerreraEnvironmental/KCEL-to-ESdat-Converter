@@ -5,4 +5,6 @@
 
 project_info: 
   project_number: "21-07565-001" # USE PROJ # FROM ESDAT
-  project_name:   "Geneva" # USE PROJ NAME FROM ESDAT
+  project_name:   "PBOOM: Park Place" # USE PROJ NAME FROM ESDAT
+  project_site:   "Park-Place" # site from ESdat
+  sample_matrix:  "Water"

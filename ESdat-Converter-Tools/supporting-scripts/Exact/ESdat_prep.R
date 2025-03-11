@@ -7,7 +7,7 @@
 ## Project #:           N/A
 ## Task # (optional):   N/A
 ## ---------------------------
-## Notes: This script is ran in conjunction with the ESdat_header.R and KCEL_to_ESdat.R scripts
+## Notes: This script is ran in conjunction with the ESdat_header.R and Exact_to_ESdat.R scripts
 ##
 ##    *** Have you updated the config.yaml file? Please do so before running any scripts ***
 ##        
