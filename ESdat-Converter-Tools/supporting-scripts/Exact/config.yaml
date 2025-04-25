@@ -3,8 +3,8 @@
 # Please enter all necessary information below before running scripts
 
 
-project_info: 
-  project_number: "21-07565-001" # USE PROJ # FROM ESDAT
+project_info:
+  project_number: "23-08229-000" # USE PROJ # FROM ESDAT
   project_name:   "PBOOM: Park Place" # USE PROJ NAME FROM ESDAT
-  project_site:   "Park-Place" # site from ESdat
+  project_site:   "Bellingham-Misc" # site from ESdat
   sample_matrix:  "Water"
