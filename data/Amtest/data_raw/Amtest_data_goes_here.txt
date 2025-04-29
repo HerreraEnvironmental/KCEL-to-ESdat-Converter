@@ -1,0 +1,1 @@
+Put your raw Amtest files in this folder
