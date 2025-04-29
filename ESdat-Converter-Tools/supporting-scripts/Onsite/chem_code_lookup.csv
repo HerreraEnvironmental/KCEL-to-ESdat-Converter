@@ -3,8 +3,12 @@ Total Phosphorus,7723-14-0
 "Conductivity, Field",Conductivity @ 25oC
 Copper,7440-50-8
 "Dissolved Oxygen, Field",Dissolved Oxygen
+E. coli,E. Coli
 E. Coli,E. Coli
+Escherichia coli,E. Coli
 Hardness,CarbHard_as_CaCO3
+Nitrate + Nitrite as N,NO3+NO2 (as N)
+Nitrite + Nitrate Nitrogen,NO3+NO2 (as N)
 Total Nitrate + Nitrite,NO3+NO2 (as N)
 Orthophosphate Phosphorus,Ortho Phosphorus
 "pH, Field",pH (Field)

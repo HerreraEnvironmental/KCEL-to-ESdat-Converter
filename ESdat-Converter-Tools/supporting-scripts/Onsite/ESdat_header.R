@@ -32,7 +32,7 @@
 
 ## Import files
   # Raw files
-  files         <- list.files("./data/Onsite/data_raw", pattern = "*.csv")
+  files         <- list.files("./data/Onsite/data_raw", pattern = "*.xls")
   # Lab report names
   lab_reports   <- unique(substring(files, 1, 8)) # !! May change in the future !!
  
