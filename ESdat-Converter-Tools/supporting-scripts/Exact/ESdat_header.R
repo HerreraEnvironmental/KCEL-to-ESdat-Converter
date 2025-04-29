@@ -36,9 +36,12 @@
   
   # Lab report names
   # TODO not sure if this is a typical file name, might need adjustment
-  lab_reports <- gsub("LandscapeExcelExport_", "",
-                      gsub(".xls", "", list.files("data/Exact/data_raw", pattern = "*.xls")))
-  
+  # use .xls for new format
+  # lab_reports <- gsub("LandscapeExcelExport_", "",
+  #                     gsub(".xls", "", list.files("data/Exact/data_raw", pattern = "*.xls")))
+  # use .csv for new format
+  lab_reports <- unique(substring(list.files("./data/Exact/data_raw", pattern = "*.csv"), 1, 8))
+    
   # Read in secondary files
   files         <- list.files("./data/Exact/data_secondary")
   # Build XML based on project

@@ -47,7 +47,8 @@
       mutate(Result_Unit = ifelse(Result_Unit == "/100mL", "CFU/100mL", Result_Unit)) # convert bacteria units
     exact_sample <- read.csv(exact_report[2])
     exact_sample <- exact_sample %>%
-      filter(SampleCode != "")
+      filter(SampleCode != "") %>%
+      distinct()
     
     ## if there's an ARI file, combine with Exact file
     if (any(grep(lab_report, ari_files))) {
@@ -60,25 +61,33 @@
                                  Field_ID)) 
       
       full_chem <- full_join(exact_chem, ari_chem) %>%
-        mutate(Total_or_Filtered = case_when(Total_or_Filtered == "TRUE" ~ "F",
-                                             Total_or_Filtered == "FALSE" ~ "T",
-                                             .default = Total_or_Filtered))
-      write.csv(full_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+        mutate(Total_or_Filtered = ifelse(OriginalChemName == "Ortho Phosphorus", "F",
+                                          case_when(Total_or_Filtered == TRUE ~ "T",
+                                             Total_or_Filtered == FALSE ~ "F")))
+      
+      write_csv(full_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
       
       full_sample <- full_join(exact_sample, ari_sample)
       full_sample <- distinct(full_sample) %>%
         mutate(Sample_Type = ifelse(grepl("QA", Field_ID), "Field_D", Sample_Type),              # assign field duplicates
                Parent_Sample = ifelse(grepl("QA", Field_ID),                                     # only works with the "*-QA" naming convention
                                       substring(Field_ID, 1, nchar(Field_ID)-3), Parent_Sample))
-      write.csv(full_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+      
+      write_csv(full_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
       
     } else {
       exact_chem <- exact_chem %>%
-        mutate(Total_or_Filtered = case_when(Total_or_Filtered == "TRUE" ~ "T",
-                                             Total_or_Filtered == "FALSE" ~ "F"))
-      write.csv(exact_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+        mutate(Total_or_Filtered = case_when(Total_or_Filtered == TRUE ~ "T",
+                                             Total_or_Filtered == FALSE ~ "F"))
       
-      write.csv(exact_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+      write_csv(exact_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
+      
+      exact_sample <- distinct(exact_sample) %>%
+        mutate(Sample_Type = ifelse(grepl("QA", Field_ID), "Field_D", Sample_Type),              # assign field duplicates
+               Parent_Sample = ifelse(grepl("QA", Field_ID),                                     # only works with the "*-QA" naming convention
+                                      substring(Field_ID, 1, nchar(Field_ID)-3), Parent_Sample))
+      
+      write_csv(exact_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
     }
   }
   

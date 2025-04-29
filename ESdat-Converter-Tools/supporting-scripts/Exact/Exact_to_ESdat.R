@@ -54,7 +54,8 @@
   # Sample CSV dataframe building
     sample <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", `Lab Sample Number`), # Required
-             Sampled_Date_Time = `Date Sampled`,                      
+             Sampled_Date_Time = `Date Sampled`,
+             Depth = "",
              Field_ID = `Sample Description`,
              Site_ID = proj_site,
              Location_Code = sub("^(([^-]*-){1}[^-]*).*", "\\1", `Sample Description`),
@@ -70,7 +71,8 @@
       distinct()
     
   # Export Sample file
-    write.csv(sample, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), 
+              na = "", row.names = FALSE)
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
@@ -81,34 +83,36 @@
              Result = as.numeric(gsub("<", "", result)),   # Required  
              Result_Unit = units,                          # Required  
              Total_or_Filtered = as.character(ifelse(grepl("Dissolved", analyte_name)|analyte_name == "Orthophosphate-P", "F", "T")), # Required  
+             Result_Type = "REG",                          # Required
              Method_Type = test_group_name,                # Required 
              Method_Name = analytical_method_name,         # Required
-             #Extraction_Method = Preparation.Method,                   
-             #Extraction_Date = Preparation.Date,                       
+             Extraction_Method = "",                   
+             Extraction_Date = "",                       
              Anaysed_Date = date_analyzed,                             
              Lab_Analysis_ID = `Lab Sample Number`,        # Required  
              Lab_Preperation_Batch_ID = lab_report,        # Required  
              Lab_Analysis_Batch_ID = lab_report,           # Required 
              EQL = mdl,                                    # Required
-             #RDL = RDL,                                               
+             RDL = "",                                               
              MDL = mdl,                                                
-             #ODL = "",                                               
+             ODL = "",                                               
              Detection_Limit_Units = units,                # Required  
              Lab_Comments = comments,                                        
              Lab_Qualifier = qualifier,                                
-             #UCL = "",                                                 # Upper confidence limit for QA recoveries
-             #LCL = "",                                                 # lower confidence limit for QA recoveries
-             #Dilution_Factor = DF,                                     # replace DF with appropriate column or remove
-             #Spike_Concentration = "",                                 # for QA samples
-             #Spike_Measurement = "",                                   # measured concentration of spike or surrogate in QA sample
-             #Spike_Units = "",                                         # units for spike concentration and measurement
+             UCL = "",                                                 # Upper confidence limit for QA recoveries
+             LCL = "",                                                 # lower confidence limit for QA recoveries
+             Dilution_Factor = "",                                     # replace DF with appropriate column or remove
+             Spike_Concentration = "",                                 # for QA samples
+             Spike_Measurement = "",                                   # measured concentration of spike or surrogate in QA sample
+             Spike_Units = "",                                         # units for spike concentration and measurement
              .keep = "none")
     
     # merge with chem_code lookup
     chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName")
     
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), 
+              na = "", row.names = FALSE)
   }
   
 ## if you want to upload lab report PDFs

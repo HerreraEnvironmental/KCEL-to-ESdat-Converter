@@ -17,6 +17,7 @@ Fecal Coliform,Faecal Coliforms
 "Hardness, Calc",CarbHard_as_CaCO3
 HARDNESS,Hardness
 "Magnesium, Total, ICP-MS",Magnesium
+Nitrtite-N + Nitrate-N,NO3+NO2 (as N)
 Nitrite + Nitrate Nitrogen,NO3+NO2 (as N)
 Nitrite-N + Nitrate-N,NO3+NO2 (as N)
 Orthophosphate Phosphorus,Ortho Phosphorus
