@@ -31,7 +31,7 @@
 ## Import files
   # Raw files by lab
   Onsite_files <- list.files("./data/Onsite/data_raw", full.names = TRUE, pattern = "HERR")
-  Amtest_files <- list.files("./data/Amtest/data_raw", full.names = TRUE, pattern = "AmTest")
+  Amtest_files <- list.files("./data/Onsite/data_raw", full.names = TRUE, pattern = "AmTest")
   
   chem_lookup <- read.csv("ESdat-Converter-Tools/supporting-scripts/Onsite/chem_code_lookup.csv")
   locations <- read.csv("ESdat_locations.csv") %>%
