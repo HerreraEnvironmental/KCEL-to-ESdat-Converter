@@ -22,10 +22,14 @@
   library(XML)
   library(yaml)
 
+# run the QC file converter
+  source("ESdat-Converter-Tools/supporting-scripts/KCEL/KCEL_QC.R", local = T)
+
 ## Import files
   # Raw files
   files <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
   dfs <- lapply(files, read.csv)
+  
   # Chem codes
   chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
 
@@ -41,28 +45,38 @@
   for(i in 1:length(files)){
   # Set dataframe for iteration
     df <-dfs[[i]]
+    
   # Assign lab report
     lab_report <- lab_reports[i]
+    
+  # read in QC data
+    qc_sample <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"))
+    qc_chem <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatChemistry.csv"))
+      
   # Sample CSV dataframe building
     sample <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", Lab.ID),
              Sampled_Date_Time = Collect.Date,
              Field_ID = Locator,
-             #Blank1 = "",
              Depth = Depth.m.,
-             #Blank2 = "",
              Matrix_Type = "Water",
              Sample_Type = "Normal",
              Parent_Sample = "",
-             #Blank3 = "",
              SDG = lab_report,
              Lab_Name = "KCEL",
              Lab_SampleID = Lab.ID,
              Lab_Comments = "",
              Lab_Report_Number = lab_report,
-             .keep = "none")
+             .keep = "none") %>%
+      distinct()
+    
+  # join QC
+    qc_sample <- qc_sample %>%
+      filter(!SampleCode %in% sample$SampleCode)
+    sample <- full_join(sample, qc_sample)
   # Export Sample file
-    write.csv(sample, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), 
+              row.names = FALSE, na = "")
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
@@ -88,12 +102,12 @@
              Detection_Limit_Units = Units,
              Lab_Comments = "",
              Lab_Qualifier = Qualifier,
-             UCL = "",
-             LCL = "",
+             UCL = as.numeric(NA),
+             LCL = as.numeric(NA),
              Dilution_Factor = DF,
-             Spike_Concentration = "",
-             Spike_Measurement = "",
-             Spike_Units = "",
+             Spike_Concentration = as.numeric(NA),
+             Spike_Measurement = as.numeric(NA),
+             Spike_Units = NA,
              .keep = "none")
     # remove unnecessary fields
     chemistry <- chemistry %>%
@@ -102,8 +116,14 @@
     chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%
       mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
       select(-c(ChemCode.x, ChemCode.y))
+  # join QC
+    qc_chem <- qc_chem %>%
+      mutate(Total_or_Filtered = ifelse(Total_or_Filtered == "Filtered", "F", "T"))
+    chemistry <- full_join(chemistry, qc_chem) %>%
+      distinct()
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), 
+              row.names = FALSE, na = "")
   }
   
 ## Import PDF lab reports and copy to secondary folder
