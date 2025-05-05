@@ -24,8 +24,11 @@
 
 ## Import files
   # Raw files
-  files <- list.files("data/Exact/data_raw", full.names = TRUE, pattern = "*.xls")
-  dfs <- lapply(files, read_xls)
+  exact_files <- list.files("data/Exact/data_raw", full.names = TRUE, pattern = "*.xls")
+  dfs <- lapply(exact_files, read_xls)
+  
+  ari_files <- list.files("./data/Exact/data_raw", full.names = TRUE, pattern = "*4.csv")
+  
   # Chem codes 
   # Update OriginalChemName column with parameter names from your lab's EDD
   chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/Exact/chem_code_lookup.csv")
@@ -38,21 +41,21 @@
   samp_matrix   <- config$project_info$sample_matrix
   
 ## Retrieve lab report names
-  # TODO not sure if this is a typical file name, might need adjustment
-  lab_reports <- gsub("LandscapeExcelExport_", "",
-                 gsub(".xls", "", list.files("data/Exact/data_raw", pattern = "*.xls")))
+  lab_reports <- unique(substring(list.files("./data/Exact/data_raw", pattern = "*.xls"), 1, 8))
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
   for(i in 1:length(files)){
   # Set dataframe for iteration
-    df <-dfs[[i]]
-  # filter out 
-    df <- df %>% 
-      filter(analyte_name %in% chem_codes$OriginalChemName)
+    exact_df <-dfs[[i]]
+  # filter out extras
+    exact_df <- exact_df %>% 
+      filter(analyte_name %in% chem_codes$OriginalChemName) %>%
+      filter(!grepl("Analytical Resources Report", result))
+    
   # Assign lab report
     lab_report <- lab_reports[i]
   # Sample CSV dataframe building
-    sample <- df %>%
+    exact_sample <- exact_df %>%
       mutate(SampleCode = paste0(lab_report, "_", `Lab Sample Number`), # Required
              Sampled_Date_Time = `Date Sampled`,
              Depth = "",
@@ -69,50 +72,78 @@
              Lab_Report_Number = lab_report,               # Required
              .keep = "none") %>%
       distinct()
-    
-  # Export Sample file
-    write.csv(sample, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), 
-              na = "", row.names = FALSE)
   
   # Chemistry CSV dataframe building
-    chemistry <- df %>%
+    exact_chem <- exact_df %>%
       mutate(SampleCode = paste0(lab_report, "_", `Lab Sample Number`), # Required
-             #ChemCode = "",                               # Required 
-             OriginalChemName = analyte_name,              # Required 
+             #ChemCode = "",                               # Required
+             OriginalChemName = analyte_name,              # Required
              Prefix = ifelse(grepl("<", result), "<", ""), # Required
-             Result = as.numeric(gsub("<", "", result)),   # Required  
-             Result_Unit = units,                          # Required  
-             Total_or_Filtered = as.character(ifelse(grepl("Dissolved", analyte_name)|analyte_name == "Orthophosphate-P", "F", "T")), # Required  
+             Result = as.numeric(gsub("<", "", result)),   # Required
+             Result_Unit = units,                          # Required
+             Total_or_Filtered = ifelse(grepl("Dissolved", analyte_name)
+                                              |analyte_name == "Orthophosphate-P", "F", "T"), # Required
              Result_Type = "REG",                          # Required
-             Method_Type = test_group_name,                # Required 
+             Method_Type = test_group_name,                # Required
              Method_Name = analytical_method_name,         # Required
-             Extraction_Method = "",                   
-             Extraction_Date = "",                       
-             Anaysed_Date = date_analyzed,                             
-             Lab_Analysis_ID = `Lab Sample Number`,        # Required  
-             Lab_Preperation_Batch_ID = lab_report,        # Required  
-             Lab_Analysis_Batch_ID = lab_report,           # Required 
-             EQL = mdl,                                    # Required
-             RDL = "",                                               
-             MDL = mdl,                                                
-             ODL = "",                                               
-             Detection_Limit_Units = units,                # Required  
-             Lab_Comments = comments,                                        
-             Lab_Qualifier = qualifier,                                
-             UCL = "",                                                 # Upper confidence limit for QA recoveries
-             LCL = "",                                                 # lower confidence limit for QA recoveries
-             Dilution_Factor = "",                                     # replace DF with appropriate column or remove
-             Spike_Concentration = "",                                 # for QA samples
-             Spike_Measurement = "",                                   # measured concentration of spike or surrogate in QA sample
+             Extraction_Method = "",
+             Extraction_Date = "",
+             Anaysed_Date = date_analyzed,
+             Lab_Analysis_ID = `Lab Sample Number`,        # Required
+             Lab_Preperation_Batch_ID = lab_report,        # Required
+             Lab_Analysis_Batch_ID = lab_report,           # Required
+             EQL = as.numeric(mdl),                        # Required
+             RDL = as.numeric(NA),
+             MDL = as.numeric(mdl),
+             ODL = "",
+             Detection_Limit_Units = units,                # Required
+             Lab_Comments = case_when(qualifier == "*Estimated Value below Quantitation limit" ~ qualifier,
+                                      .default = comments),
+             Lab_Qualifier = case_when(qualifier == "*Estimated Value below Quantitation limit" ~ "J",
+                                       .default = qualifier),
+             UCL = as.numeric(NA),                                                 # Upper confidence limit for QA recoveries
+             LCL = as.numeric(NA),                                                 # lower confidence limit for QA recoveries
+             Dilution_Factor = as.numeric(NA),                                     # replace DF with appropriate column or remove
+             Spike_Concentration = as.numeric(NA),                                 # for QA samples
+             Spike_Measurement = as.numeric(NA),                                   # measured concentration of spike or surrogate in QA sample
              Spike_Units = "",                                         # units for spike concentration and measurement
              .keep = "none")
-    
-    # merge with chem_code lookup
-    chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName")
-    
-  # Export Chemistry file
-    write.csv(chemistry, paste0("data/Exact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), 
-              na = "", row.names = FALSE)
+  
+    ## if there's an ARI file, combine with Exact file
+    if (any(grep(lab_report, ari_files))) {
+      ari_report <- grep(lab_report, ari_files, value = TRUE)
+      ari_chem <- read.csv(ari_report[1]) %>% 
+        mutate(Total_or_Filtered = ifelse(OriginalChemName == "Ortho Phosphorus", "F",
+                                                                                case_when(Total_or_Filtered == TRUE ~ "T",
+                                                                                          Total_or_Filtered == FALSE ~ "F"))) %>%
+        select(-ChemCode)
+        
+      ari_sample <- read.csv(ari_report[2]) %>%
+        mutate(Lab_Report_Number = lab_report) # assigns Exact lab report number to ARI samples
+      
+      full_chem <- full_join(exact_chem, ari_chem)
+      
+      # merge with chem_code lookup
+      full_chem <- merge(full_chem, chem_codes, by = "OriginalChemName")
+      
+      write_csv(full_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
+      
+      full_sample <- full_join(exact_sample, ari_sample)
+      full_sample <- distinct(full_sample) %>%
+        mutate(Sample_Type = ifelse(grepl("QA", Field_ID), "Field_D", Sample_Type),              # assign field duplicates
+               Parent_Sample = ifelse(grepl("QA", Field_ID),                                     # only works with the "*-QA" naming convention
+                                      substring(Field_ID, 1, nchar(Field_ID)-3), Parent_Sample))
+      
+      write.csv(full_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
+      
+    }else {
+      
+      # merge with chem_code lookup
+      exact_chem <- merge(exact_chem, chem_codes, by = "OriginalChemName")
+      write.csv(exact_chem, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
+      write.csv(exact_sample, paste0("./data/EXact/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
+      
+    }
   }
   
 ## if you want to upload lab report PDFs
