@@ -40,11 +40,14 @@
   proj_site     <- config$project_info$project_site
   samp_matrix   <- config$project_info$sample_matrix
   
+  # locations <- read.csv("ESdat_locations.csv") %>%
+  #   filter(Project_ID == proj_num)
+  
 ## Retrieve lab report names
   lab_reports <- unique(substring(list.files("./data/Exact/data_raw", pattern = "*.xls"), 1, 8))
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
-  for(i in 1:length(files)){
+  for(i in 1:length(exact_files)){
   # Set dataframe for iteration
     exact_df <-dfs[[i]]
   # filter out extras
@@ -61,7 +64,7 @@
              Depth = "",
              Field_ID = `Sample Description`,
              Site_ID = proj_site,
-             Location_Code = sub("^(([^-]*-){1}[^-]*).*", "\\1", `Sample Description`),
+             Location_Code = gsub("[0-9]+\\s[0-9]+", "", `Sample Description`), #sub("^(([^-]*-){1}[^-]*).*", "\\1", `Sample Description`),
              Matrix_Type =  samp_matrix,                   # Required
              Sample_Type = ifelse(grepl("QA", `Sample Description`), "Field_D", "Normal"), # Required
              Parent_Sample = "",                                       # only for duplicates or matrix spikes-update accordingly
@@ -88,7 +91,7 @@
              Method_Name = analytical_method_name,         # Required
              Extraction_Method = "",
              Extraction_Date = "",
-             Anaysed_Date = date_analyzed,
+             Anaysed_Date = mdy_hms(date_analyzed),
              Lab_Analysis_ID = `Lab Sample Number`,        # Required
              Lab_Preperation_Batch_ID = lab_report,        # Required
              Lab_Analysis_Batch_ID = lab_report,           # Required
