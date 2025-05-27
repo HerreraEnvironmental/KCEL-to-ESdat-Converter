@@ -95,43 +95,61 @@ for (i in 1:length(files)) {
   # extract lab and field dups
   # ecoli dups have different columns, so separate it
   dups <- df %>%
-    filter(sample_type =="LAB_D" & ...1 != "(Lab Duplicate)" &
-      ...1 != "Escherichia coli") %>%
+    filter(sample_type =="LAB_D" & ...1 != "(Lab Duplicate)" 
+           #& ...1 != "Escherichia coli"
+      ) %>%
+    mutate(
+      #LCL = sub("--.*", "", limits),
+      #UCL = sub(".*--", "", limits),
+      sample = str_match(...1, ":\\s*(.*?)\\s* ")[, 2],
+      Parent_Sample = str_match(...1, " \\s*(.*?)\\s* Matrix:")[, 2],
+      matrix = str_match(...1, "Matrix:\\s*(.*)\\s* Listtype:")[, 2],
+      listtype = str_match(...1, "Listtype:\\s*(.*)\\s* Method:")[, 2],
+      method = str_match(...1, "Method:\\s*(.*)\\s* Project:")[, 2],
+      project = str_match(...1, "Project:\\s*(.*)\\s* Pkey:")[, 2]
+    ) %>%
+    fill(c(sample, Parent_Sample, matrix, listtype, method, project), 
+         .direction = "down") %>%
     select(-(10:17))
-
-  # rename columns
-  colnames(dups) <- c(
-    "parameter", "MDL", "RDL", "units", "samp_value", "ld_value",
-    "rpd", "qualifier", "limits", "Sample_Type"
-  )
-
+  
   # extract ecoli dups
-  ecoli_dup <- testing %>%
-    filter(sample_type == "LAB_D" & ...1 != "(Lab Duplicate)" & ...1 == "Escherichia coli") %>%
-    select(-(10:17))
+  ecoli_dup <- dups %>%
+    filter(...1 == "Escherichia coli") %>%
+    rename("parameter" = ...1, 
+           "MDL" = ...2, 
+           "RDL" = ...3, 
+           "units" = ...4, 
+           "samp_value" = ...5, 
+           "ld_value" = ...6,
+           "rlog" = ...7, 
+           "precision" = ...8, 
+           "qualifier" = ...9, 
+           "Sample_Type" = sample_type)
 
-  # rename columns
-  colnames(ecoli_dup) <- c(
-    "parameter", "MDL", "RDL", "units", "samp_value", "ld_value",
-    "rlog", "precision", "qualifier", "Sample_Type"
-  )
+# filter out e. coli from regular dups
+  dups <- dups %>%
+    filter(...1 != "Escherichia coli") %>%
+    rename("parameter" = ...1, 
+           "MDL" = ...2, 
+           "RDL" = ...3, 
+           "units" = ...4, 
+           "samp_value" = ...5, 
+           "ld_value" = ...6,
+           "rpd" = ...7, 
+           "qualifier" = ...8, 
+           "limits" = ...9, 
+           "Sample_Type" = sample_type)
+  
 
-  # join dups
+  # join dups together
   dups <- full_join(dups, ecoli_dup)
 
   # extract sample info
   dups <- dups %>%
     mutate(
       LCL = sub("--.*", "", limits),
-      UCL = sub(".*--", "", limits),
-      sample = str_match(parameter, ":\\s*(.*?)\\s* ")[, 2],
-      Parent_Sample = str_match(parameter, " \\s*(.*?)\\s* Matrix:")[, 2],
-      matrix = str_match(parameter, "Matrix:\\s*(.*)\\s* Listtype:")[, 2],
-      listtype = str_match(parameter, "Listtype:\\s*(.*)\\s* Method:")[, 2],
-      method = str_match(parameter, "Method:\\s*(.*)\\s* Project:")[, 2],
-      project = str_match(parameter, "Project:\\s*(.*)\\s* Pkey:")[, 2]
+      UCL = sub(".*--", "", limits)
     ) %>%
-    fill(c(sample, Parent_Sample, matrix, listtype, method, project), .direction = "down") %>%
     filter(!grepl("Parameter", parameter) &
       !grepl("LD", parameter) &
       !grepl("Workgroup", parameter))
@@ -417,7 +435,8 @@ for (i in 1:length(files)) {
       Result_Unit = ifelse(Result_Unit == "%", Spike_Units, Result_Unit),
       Sample_Type = "NCP"
     ) %>%
-    rename(SampleCode = Parent_Sample)
+    rename(SampleCode = Parent_Sample) %>%
+    filter(!grepl(lab_report, SampleCode))
 
   # join parent samples to df
   qc_results <- full_join(qc_results, parent_samples)
@@ -444,11 +463,6 @@ for (i in 1:length(files)) {
       LCL = as.numeric(LCL),
       UCL = as.numeric(UCL)
     )
-
-  # test <- qc_results %>%
-  #   select(c(SampleCode, OriginalChemName, Matrix_Type, Sample_Type, Parent_Sample,
-  #            Prefix, Result_Value, Result_Unit, Method_Name, MDL, RDL, Spike_Units,
-  #            Spike_Concentration, Spike_Measurement, Lab_Qualifier, LCL, UCL))
 
   # ---- ESdat format ----
 

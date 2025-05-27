@@ -46,12 +46,12 @@
   # dates         <- find_date(files)
   # dates         <- substring(files, 24, 30)
   # dates         <- as.character(dmy(dates))
-  dates           <- as.character(Sys.Date())
+  date           <- as.character(Sys.Date())
   # Read in secondary files
   files         <- list.files("data/KCEL/data_secondary")
   # Build XML based on project
   for (i in 1:length(lab_reports)){
-    report_date <- dates[i]
+    report_date <- date
     report_num <- lab_reports[i]
     sample_file <- grep(paste0(report_num, ".ESdatSample"), files, value = TRUE)
     chemistry_file <- grep(paste0(report_num, ".ESdatChemistry"), files, value = TRUE)
