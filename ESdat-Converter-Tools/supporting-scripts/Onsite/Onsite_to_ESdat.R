@@ -26,7 +26,6 @@
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/Onsite/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
-  proj_site     <- config$project_info$project_site
   
 ## Import files
   # Raw files by lab
@@ -35,7 +34,7 @@
   
   chem_lookup <- read.csv("ESdat-Converter-Tools/supporting-scripts/Onsite/chem_code_lookup.csv")
   locations <- read.csv("ESdat_locations.csv") %>%
-    filter(Site_ID == proj_site)
+    filter(Project_ID == proj_num)
   
   ## Retrieve lab report names
   lab_reports <- unique(substring(list.files("./data/Onsite/data_raw", pattern = "*.xls"), 1, 8))
@@ -50,7 +49,7 @@
     #   # filter out empty rows
     #   filter(!(SDG == "") & !is.na(SDG)) %>%
     #   # make total or filtered a character column
-    #   mutate(Totalor.Filtered = as.character(ifelse(Total.or.Filtered == TRUE, "T", "F")))
+    #   mutate(Total.or.Filtered = as.character(ifelse(Total.or.Filtered == TRUE, "T", "F")))
     
     # select and rename relevant columns for chemistry file
     onsite_chem <- onsite_report %>%
@@ -89,7 +88,7 @@
     onsite_sample <- onsite_report %>%
       mutate(SampleCode = `Sample Code`,
              Sampled_Date_Time = `Sampled Date Time`,
-             Site_ID = proj_site,
+             #Site_ID = proj_site,
              Field_ID = `Field ID`,
              Depth = NA,
              Matrix_Type = `Matrix Type`,
@@ -108,10 +107,65 @@
       
       amtest_report <- read.csv(grep(lab_report, Amtest_files, value = TRUE))
       
+      # if in EIM format 
+      if (colnames(amtest_report)[1] == 'Study_ID'){
+      amtest_chem <- amtest_report %>%
+        mutate(SampleCode = Sample_ID,
+               OriginalChemName = Result_Parameter_Name,
+               Prefix = as.character(case_when(Result_Data_Qualifier == "U" ~ "<",
+                                               .default = "")),
+               Result = as.numeric(gsub(",", "", Result_Value)),
+               Result_Unit = Result_Value_Units,
+               Total_or_Filtered = "T",
+               Result_Type = "REG",
+               Method_Type = Result_Method,
+               Method_Name = Result_Method,
+               Extraction_Date = NA,
+               Analysed_Date = mdy_hm(paste(Lab_Analysis_Date, " ", Lab_Analysis_Time)),
+               Lab_Analysis_ID = Sample_ID,
+               Lab_Preperation_Batch_ID = NA,
+               Lab_Analysis_Batch_ID = NA,
+               EQL = Result_Reporting_Limit,
+               RDL = Result_Reporting_Limit,
+               MDL = Result_Detection_Limit,
+               ODL = NA,
+               Detection_Limit_Units = Result_Value_Units,
+               Lab_Comments = NA,
+               Lab_Qualifier = Result_Data_Qualifier,
+               UCL = NA,
+               LCL = NA,
+               Dilution_Factor = NA,
+               Spike_Concentration = NA,
+               Spike_Units = NA,
+               Spike_Measurement = NA,
+               .keep = "none")
+      # join with lookup for chemcode
+      amtest_chem <- left_join(amtest_chem, chem_lookup)
+      
+      amtest_sample <- amtest_report %>%
+        mutate(SampleCode = Sample_ID,
+               Sampled_Date_Time = mdy_hm(paste0(Field_Collection_Start_Date, " ", Field_Collection_End_Time)),
+               Field_ID = Study_Specific_Location_ID,
+               #Site_ID = proj_site,
+               Depth = NA,
+               Matrix_Type = ifelse(Sample_Matrix == 'W', 'Water', Sample_Matrix),
+               Sample_Type = "Normal",
+               Parent_Sample = NA,
+               SDG = lab_report,
+               Lab_Name = Result_Lab_Name,
+               Lab_SampleID = Sample_ID,
+               Lab_Comments = NA,
+               Lab_Report_Number = lab_report,
+               .keep = 'none') %>%
+        distinct()
+      }
+      else {
+      
+      # # if other format
       amtest_chem <- amtest_report %>%
         mutate(SampleCode = AmTest.ID,
                OriginalChemName = Parameter,
-               Prefix = as.character(case_when(Qualifier == "U" ~ "<", 
+               Prefix = as.character(case_when(Qualifier == "U" ~ "<",
                                                .default = "")),
                Result = Result,
                Result_Unit = units,
@@ -140,24 +194,7 @@
                .keep = "none")
       # join with lookup for chemcode
       amtest_chem <- left_join(amtest_chem, chem_lookup)
-      
-      # if EIM format
-      # amtest_sample <- amtest_report %>%
-      #   mutate(SampleCode = Sample_ID,
-      #          Sampled_Date_Time = mdy_hm(paste0(Field_Collection_Start_Date, " ", Field_Collection_End_Time)),
-      #          Field_ID = Study_Specific_Location_ID,
-      #          Site_ID = proj_site,
-      #          Depth = NA,
-      #          Matrix_Type = ifelse(Sample_Matrix == 'W', 'Water', Sample_Matrix),
-      #          Sample_Type = "Normal",
-      #          Parent_Sample = NA,
-      #          SDG = lab_report,
-      #          Lab_Name = Result_Lab_Name,
-      #          Lab_SampleID = Sample_ID,
-      #          Lab_Comments = NA,
-      #          Lab_Report_Number = lab_report,
-      #          .keep = 'none')
-      
+
       # if other format
       amtest_sample <- amtest_report %>%
         mutate(SampleCode = AmTest.ID,
@@ -174,8 +211,7 @@
                Lab_Comments = NA,
                Lab_Report_Number = lab_report,
                .keep = 'none')
-      
-      amtest_sample <- distinct(amtest_sample)
+      }
       
       full_chem <- full_join(onsite_chem, amtest_chem)
       
@@ -187,7 +223,6 @@
       ## assign field ID
       samp_date<-gsub("-", "", substring(onsite_sample$Sampled_Date_Time[1], 1, 10))
       locations <- read.csv("ESdat_locations.csv") %>%
-        filter(Site_ID == proj_site) %>%
         mutate(Field_ID = paste0(Field_ID, "-", samp_date))
       
       ## join for location codes
