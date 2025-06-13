@@ -32,7 +32,8 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
   dfs <- lapply(files, read.csv)
   
   # Chem codes
-  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
+  library(readr)
+  chem_codes <- read_csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
 
 ## Import config.yaml file
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/KCEL/config.yaml")
@@ -118,7 +119,7 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
              .keep = "none")
     # remove unnecessary fields
     chemistry <- chemistry %>%
-      filter(!OriginalChemName %in% c('Field Personnel', 'Sampling Method', 'Sample Function'))
+      filter(!OriginalChemName %in% c('Field Personnel', 'Sampling Method', 'Sample Function', 'Sample Depth'))
     
     chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%
       mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
