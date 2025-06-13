@@ -23,8 +23,9 @@
   library(yaml)
 
 # run the QC file converter
+if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
   source("ESdat-Converter-Tools/supporting-scripts/KCEL/KCEL_QC.R", local = T)
-
+}
 ## Import files
   # Raw files
   files <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.csv")
@@ -50,8 +51,12 @@
     lab_report <- lab_reports[i]
     
   # read in QC data
-    qc_sample <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"))
-    qc_chem <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatChemistry.csv"))
+    qc_flag <- FALSE
+    if(file.exists(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"))){
+      qc_flag <- TRUE
+      qc_sample <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"))
+      qc_chem <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatChemistry.csv"))
+    }
       
   # Sample CSV dataframe building
     sample <- df %>%
@@ -71,9 +76,11 @@
       distinct()
     
   # join QC
+    if(qc_flag == TRUE){
     qc_sample <- qc_sample %>%
       filter(!SampleCode %in% sample$SampleCode)
     sample <- full_join(sample, qc_sample)
+    }
   # Export Sample file
     write.csv(sample, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), 
               row.names = FALSE, na = "")
@@ -117,10 +124,12 @@
       mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
       select(-c(ChemCode.x, ChemCode.y))
   # join QC
+    if(qc_flag == TRUE){
     qc_chem <- qc_chem %>%
       mutate(Total_or_Filtered = ifelse(Total_or_Filtered == "Filtered", "F", "T"))
     chemistry <- full_join(chemistry, qc_chem) %>%
       distinct()
+    }
   # Export Chemistry file
     write.csv(chemistry, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), 
               row.names = FALSE, na = "")
