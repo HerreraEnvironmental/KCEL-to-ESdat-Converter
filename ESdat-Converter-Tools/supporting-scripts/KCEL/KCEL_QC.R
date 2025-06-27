@@ -1,7 +1,7 @@
 library(tidyverse)
 library(readxl)
-
-
+library(yaml)
+library(janitor)
 
 ## ---- Data ----
 files <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.xlsx")
@@ -26,8 +26,8 @@ for (i in 1:length(files)) {
   lab_report <- lab_reports[i]
 
   df <- df %>%
-    # filter out empty rows
-    filter(!is.na(...1)) %>%
+    # filter out empty rows & columns
+    remove_empty(which = c('cols', 'rows')) %>%
     # assign sample types
     mutate(sample_type = case_when(substring(...1, 1, 3) == "LCS" ~ "LCS",
       substring(...1, 1, 2) == "LD" ~ "LAB_D",
@@ -43,16 +43,20 @@ for (i in 1:length(files)) {
       substring(...1, 1, 2) == "AF" ~ "AF",
       .default = NA
     )) %>%
-    fill(sample_type, .direction = "down") %>%
+    fill(sample_type, .direction = "down")
+  
+  if (grepl("Bellevue", files[i])){
     # last 7 rows are just notes, skip them
-    head(-7)
+    df %>%
+      head(-7)
+  }
 
   ### ---- LCS ----
 
   # extract lab control sample data
   lcs <- df %>%
     filter(sample_type == "LCS" & ...1 != "(Lab Control Sample)") %>%
-    select(-(10:17))
+    remove_empty(which = "cols")
 
   # rename columns
   colnames(lcs) <- c(
@@ -110,7 +114,7 @@ for (i in 1:length(files)) {
     ) %>%
     fill(c(sample, Parent_Sample, matrix, listtype, method, project), 
          .direction = "down") %>%
-    select(-(10:17))
+    remove_empty(which = "cols")
   
   # extract ecoli dups
   ecoli_dup <- dups %>%
@@ -171,7 +175,7 @@ for (i in 1:length(files)) {
   # extract method blanks
   method_blank <- df %>%
     filter(sample_type == "MB" & ...1 != "(Method Blank)") %>%
-    select(-(7:17))
+    remove_empty(which = "cols")
 
   # rename columns
   colnames(method_blank) <- c(
@@ -209,7 +213,7 @@ for (i in 1:length(files)) {
   # extract spike blanks
   spike_blank <- df %>%
     filter(sample_type == "SB" & ...1 != "(Spike Blank, Method Blank)") %>%
-    select(-(11:17))
+    remove_empty(which = "cols")
 
   # rename columns
   colnames(spike_blank) <- c(
@@ -254,7 +258,7 @@ for (i in 1:length(files)) {
   # extract matrix spikes
   matrix_spike <- df %>%
     filter(sample_type == "MS" & ...1 != "(Matrix Spike)") %>%
-    select(-(11:17))
+    remove_empty(which = "cols")
 
   # rename columns
   colnames(matrix_spike) <- c(
@@ -299,7 +303,7 @@ for (i in 1:length(files)) {
   # extract MS duplicates
   ms_dup <- df %>%
     filter(sample_type == "MS_D" & ...1 != "(Matrix Spike Duplicate, Matrix Spike)")
-
+  
   # rename columns
   colnames(ms_dup) <- c(
     "parameter", "MDL", "RDL", "units", "samp_value", "true_value1",
@@ -307,7 +311,8 @@ for (i in 1:length(files)) {
     "msd_value", "recovery2", "qualifier2", "rpd", "qualifier3",
     "limits2", "Sample_Type"
   )
-
+  
+  if (sum(ms_dup) != 0){
   # extract sample info
   ms_dup <- ms_dup %>%
     mutate(
@@ -347,6 +352,7 @@ for (i in 1:length(files)) {
       .keep = "unused"
     ) %>%
     filter(!is.na(Result_Value))
+  }
 
   # E. coli and Check Standard QC samples don't translate well to ESdat format. Ok to leave out
   # ### ---- E. coli
@@ -469,7 +475,7 @@ for (i in 1:length(files)) {
   # Sample CSV dataframe building
   sample <- qc_results %>%
     mutate(
-      SampleCode = paste0(lab_report, "_", SampleCode),
+      SampleCode = trimws(paste0(lab_report, "_", SampleCode)),
       Sampled_Date_Time = NA,
       Field_ID = NA,
       Depth = NA,
