@@ -17,6 +17,12 @@ proj_ID <- config$project_info$project_name
 ## Retrieve lab report names
 lab_reports <- substring(list.files("data/KCEL/data_raw", pattern = "*.xlsx"), 1, 6)
 
+
+# check if df is empty
+is.empty <- function(df){
+  dim(df)[1] == 0
+}
+
 ## ---- Start Loop ----
 ## Iterate through lab reports and create Sample and Chemistry CSV files
 for (i in 1:length(files)) {
@@ -52,7 +58,7 @@ for (i in 1:length(files)) {
   }
 
   ### ---- LCS ----
-
+  
   # extract lab control sample data
   lcs <- df %>%
     filter(sample_type == "LCS" & ...1 != "(Lab Control Sample)") %>%
@@ -63,7 +69,8 @@ for (i in 1:length(files)) {
     "parameter", "MDL", "RDL", "units", "true_value", "lcs_value",
     "recovery", "qualifier", "limits", "Sample_Type"
   )
-
+  
+  if (!is.empty(lcs)){
   # extract sample info
   lcs <- lcs %>%
     mutate(
@@ -93,7 +100,7 @@ for (i in 1:length(files)) {
       Matrix_Type = matrix,
       Method_Name = method
     )
-
+}
   ### ---- Duplicates ----
 
   # extract lab and field dups
@@ -116,6 +123,7 @@ for (i in 1:length(files)) {
          .direction = "down") %>%
     remove_empty(which = "cols")
   
+  if (!is.empty(dups)){
   # extract ecoli dups
   ecoli_dup <- dups %>%
     filter(...1 == "Escherichia coli") %>%
@@ -169,7 +177,7 @@ for (i in 1:length(files)) {
       Matrix_Type = matrix,
       Method_Name = method
     )
-
+}
   ### ---- Method Blanks ----
 
   # extract method blanks
@@ -183,6 +191,7 @@ for (i in 1:length(files)) {
     "qualifier", "Sample_Type"
   )
 
+  if (!is.empty(method_blank)){
   # extract sample info
   method_blank <- method_blank %>%
     mutate(
@@ -207,7 +216,7 @@ for (i in 1:length(files)) {
       Matrix_Type = matrix,
       Method_Name = method
     )
-
+  }
   ### ---- Spike Blanks ----
 
   # extract spike blanks
@@ -220,7 +229,8 @@ for (i in 1:length(files)) {
     "parameter", "MDL", "RDL", "units", "mb_value", "true_value",
     "sb_value", "recovery", "qualifier", "limits", "Sample_Type"
   )
-
+  
+  if (!is.empty(spike_blank)){
   # extract sample info
   spike_blank <- spike_blank %>%
     mutate(
@@ -252,7 +262,7 @@ for (i in 1:length(files)) {
       Method_Name = method,
       Parent_Sample = method_blank
     )
-
+  }
   ### ---- Matrix Spikes ----
 
   # extract matrix spikes
@@ -265,7 +275,8 @@ for (i in 1:length(files)) {
     "parameter", "MDL", "RDL", "units", "samp_value", "true_value",
     "ms_value", "recovery", "qualifier", "limits", "Sample_Type"
   )
-
+  
+  if (!is.empty(matrix_spike)){
   # extract sample info
   matrix_spike <- matrix_spike %>%
     mutate(
@@ -297,7 +308,7 @@ for (i in 1:length(files)) {
       Matrix_Type = matrix,
       Method_Name = method
     )
-
+  }
   ### ---- Matrix Spike Dups ----
 
   # extract MS duplicates
@@ -312,7 +323,7 @@ for (i in 1:length(files)) {
     "limits2", "Sample_Type"
   )
   
-  if (sum(ms_dup) != 0){
+  if (!is.empty(ms_dup)){
   # extract sample info
   ms_dup <- ms_dup %>%
     mutate(
@@ -418,34 +429,40 @@ for (i in 1:length(files)) {
   #          Method_Name = method)
 
   # ---- Join ----
-
-  # join all of the data frames
-  qc_results <- lcs %>%
-    full_join(dups) %>%
-    full_join(method_blank) %>%
-    full_join(matrix_spike) %>%
-    full_join(ms_dup) %>%
-    full_join(spike_blank)
-
-
+  
+  qc_results <- data.frame()
+  qc_dfs <- list(lcs, dups, method_blank, spike_blank, matrix_spike, ms_dup)
+  # loop through dataframes to check if they're empty
+  for (a in 1:length(qc_dfs)){
+    if (!is_empty(qc_dfs[[a]])){
+      # if it's the first dataframe with data, make it the qc_results
+      if(is_empty(qc_results)){
+        qc_results <- qc_dfs[[a]]
+      } else{
+        # if it's not the first df with data, join it to qc_results
+        full_join(qc_results, qc_dfs[[a]])
+      }
+    }
+  }
+  
   # extract parent samples for dups and matrix spikes
   # parent samples for MS_D and spike blanks are already in data
-  parent_samples <- qc_results %>%
-    filter(!is.na(Parent_Sample) & !Sample_Type %in% c("MS_D", "SB")) %>%
-    select(c(
-      OriginalChemName, MDL, RDL, Matrix_Type, Spike_Units, Result_Unit,
+  if ("Parent_Sample" %in% colnames(qc_results)){
+    parent_samples <- qc_results %>%
+      filter(!is.na(Parent_Sample) & !Sample_Type %in% c("MS_D", "SB")) %>%
+      select(c(OriginalChemName, MDL, RDL, Matrix_Type, Spike_Units, Result_Unit,
       Method_Name, samp_value, Parent_Sample, project, Sample_Type
-    )) %>%
-    mutate(
-      Result_Value = samp_value,
-      Result_Unit = ifelse(Result_Unit == "%", Spike_Units, Result_Unit),
-      Sample_Type = "NCP"
-    ) %>%
-    rename(SampleCode = Parent_Sample) %>%
-    filter(!grepl(lab_report, SampleCode))
-
-  # join parent samples to df
-  qc_results <- full_join(qc_results, parent_samples)
+      )) %>%
+      mutate(Result_Value = samp_value,
+             Result_Unit = ifelse(Result_Unit == "%", Spike_Units, Result_Unit),
+             ample_Type = "NCP"
+             ) %>%
+      rename(SampleCode = Parent_Sample) %>%
+      filter(!grepl(lab_report, SampleCode))
+    
+    # join parent samples to df
+    qc_results <- full_join(qc_results, parent_samples)
+  }
 
   # fill in MDL and flags for non detects
   qc_results <- qc_results %>%
@@ -463,11 +480,13 @@ for (i in 1:length(files)) {
     mutate(
       MDL = as.numeric(MDL),
       RDL = as.numeric(RDL),
-      Spike_Concentration = as.numeric(Spike_Concentration),
-      Spike_Measurement = as.numeric(Spike_Measurement),
+      Spike_Concentration = ifelse("Spike_Concentration" %in% colnames(qc_results),
+                                   as.numeric(Spike_Concentration), NA),
+      Spike_Measurement = ifelse("Spike_Measurement" %in% colnames(qc_results),
+                                 as.numeric(Spike_Measurement), NA),
       Result_Value = as.numeric(Result_Value),
-      LCL = as.numeric(LCL),
-      UCL = as.numeric(UCL)
+      LCL = ifelse("LCL" %in% colnames(qc_results), as.numeric(LCL), NA),
+      UCL = ifelse("UCL" %in% colnames(qc_results), as.numeric(UCL), NA)
     )
 
   # ---- ESdat format ----
@@ -482,7 +501,10 @@ for (i in 1:length(files)) {
       Matrix_Type = "Water",
       # no spike blank option in ESdat, consider a LCS
       Sample_Type = ifelse(Sample_Type == "SB", "LCS", Sample_Type),
-      Parent_Sample = ifelse(is.na(Parent_Sample), NA, paste0(lab_report, "_", Parent_Sample)),
+      Parent_Sample = ifelse("Parent_Sample" %in% colnames(qc_results),
+                             ifelse(is.na(Parent_Sample), NA, 
+                                    paste0(lab_report, "_", Parent_Sample)),
+                             NA),
       SDG = lab_report,
       Lab_Name = "KCEL",
       Lab_SampleID = SampleCode,
