@@ -7,7 +7,16 @@ library(janitor)
 files <- list.files("data/KCEL/data_raw", full.names = TRUE, pattern = "*.xlsx")
 
 # Chem codes
-chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
+chem_codes <- readr::read_csv("ESdat-Converter-Tools/supporting-scripts/KCEL/chem_code_lookup.csv")
+
+#The column renamed to "ï..OriginalChemName" is a common artifact when reading CSV files that were saved with UTF-8 BOM (Byte Order Mark) encoding
+#When reading a CSV with a UTF-8 BOM at the beginning, that invisible character gets attached to the first column name
+#Use readr::read_csv() instead of base R's read.csv(). It handles BOM correctly
+
+if ("ï..OriginalChemName" %in% names(chem_codes)) {
+  chem_codes <- chem_codes %>%
+    rename(OriginalChemName = `ï..OriginalChemName`)
+}
 
 ## Import config.yaml file
 config <- read_yaml("ESdat-Converter-Tools/supporting-scripts/KCEL/config.yaml")
