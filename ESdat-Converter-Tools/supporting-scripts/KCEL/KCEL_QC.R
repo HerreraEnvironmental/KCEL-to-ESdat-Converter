@@ -503,7 +503,8 @@ for (i in 1:length(files)) {
   # Sample CSV dataframe building
   sample <- qc_results %>%
     mutate(
-      SampleCode = trimws(paste0(lab_report, "_", SampleCode)),
+      Lab_SampleID = SampleCode,
+      SampleCode = trimws(paste0(lab_report, "_", SampleCode, "_", Sample_Type)),
       Sampled_Date_Time = NA,
       Field_ID = NA,
       Depth = NA,
@@ -516,20 +517,21 @@ for (i in 1:length(files)) {
                              NA),
       SDG = lab_report,
       Lab_Name = "KCEL",
-      Lab_SampleID = SampleCode,
+      
       Lab_Comments = NA,
       Lab_Report_Number = lab_report,
       .keep = "none"
     ) %>%
     distinct()
-
+  
   # Export Sample file
   write.csv(sample, paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"), na = "", row.names = FALSE)
 
   # Chemistry CSV dataframe building
   chemistry <- qc_results %>%
     mutate(
-      SampleCode = trimws(paste0(lab_report, "_", SampleCode)),
+      Lab_Analysis_ID = trimws(SampleCode),
+      SampleCode = trimws(paste0(lab_report, "_", SampleCode, "_", Sample_Type)),
       ChemCode = NA,
       OriginalChemName = OriginalChemName,
       Prefix = Prefix,
@@ -541,7 +543,6 @@ for (i in 1:length(files)) {
       Method_Name = Method_Name,
       Extraction_Date = NA,
       Anaysed_Date = NA,
-      Lab_Analysis_ID = trimws(SampleCode),
       Lab_Preperation_Batch_ID = NA,
       Lab_Analysis_Batch_ID = NA,
       EQL = RDL,
