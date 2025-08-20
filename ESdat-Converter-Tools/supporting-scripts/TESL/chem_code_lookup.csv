@@ -1,25 +1,15 @@
 ﻿OriginalChemName,ChemCode
-Anatoxin-a,64285-06-9
-Microcystin,101043-37-2
-Total Phosphorus,7723-14-0
-Pheophytin a,603-17-8
-Chlorophyll a,42617-16-3
-Ammonia Nitrogen,Ammonia as N
-"Calcium, Total, ICP-MS",Calcium
-"Conductivity, Field",Conductivity @ 25oC
-"Copper, Dissolved, ICP-MS",7440-50-8
-"Dissolved Oxygen, Field",Dissolved Oxygen
-Escherichia coli,E. Coli
-Fecal Coliform,Faecal Coliforms
-"Hardness, Calc",CarbHard_as_CaCO3
-"Magnesium, Total, ICP-MS",Magnesium
-Nitrite + Nitrate Nitrogen,NO3+NO2 (as N)
-Orthophosphate Phosphorus,Ortho Phosphorus
-"pH, Field",pH (Field)
-"Sample Temperature, Field",Temperature
-Silica,Silica
-Total Alkalinity,Alkalinity (total)
+"Phosphorus, Total",7723-14-0
+"Copper, Dissolved",7440-50-8
+Copper,7440-50-8
+Nitrate+Nitrite as N,NO3+NO2 (as N)
+"Phosphate, Ortho",Ortho Phosphorus
 Total Nitrogen,7727-37-9
+Total Kjeldahl Nitrogen,TKN
 Total Suspended Solids,TSS
-Turbidity,Turb
-"Zinc, Dissolved, ICP-MS",7440-66-6
+"Zinc, Dissolved",7440-66-6
+Zinc,7440-66-6
+6PPD-Quinone,2754428-18-5
+6PPD-Quinone (phenyl-13C6),2754428-18-5
+D5-6PPD-Quinone,2754428-18-5_sur
+"Hardness, Total as CaCO3",Hardness_as_CaCO3
