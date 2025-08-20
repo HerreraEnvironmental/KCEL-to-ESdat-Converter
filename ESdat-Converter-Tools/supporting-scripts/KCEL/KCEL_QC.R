@@ -449,7 +449,7 @@ for (i in 1:length(files)) {
         qc_results <- qc_dfs[[a]]
       } else{
         # if it's not the first df with data, join it to qc_results
-        full_join(qc_results, qc_dfs[[a]])
+        qc_results <- full_join(qc_results, qc_dfs[[a]])
       }
     }
   }
