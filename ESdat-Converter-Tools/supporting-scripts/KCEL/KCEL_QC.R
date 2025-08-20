@@ -463,8 +463,8 @@ for (i in 1:length(files)) {
       Method_Name, samp_value, Parent_Sample, project, Sample_Type
       )) %>%
       mutate(Result_Value = samp_value,
-             Result_Unit = ifelse(Result_Unit == "%", Spike_Units, Result_Unit),
-             ample_Type = "NCP"
+             Result_Unit = as.character(ifelse(Result_Unit == "%", Spike_Units, Result_Unit)),
+             Sample_Type = "NCP"
              ) %>%
       rename(SampleCode = Parent_Sample) %>%
       filter(!grepl(lab_report, SampleCode))
