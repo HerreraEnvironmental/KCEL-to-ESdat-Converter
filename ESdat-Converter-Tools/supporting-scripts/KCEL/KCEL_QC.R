@@ -62,7 +62,7 @@ for (i in 1:length(files)) {
   
   if (grepl("Bellevue", files[i])){
     # last 7 rows are just notes, skip them
-    df %>%
+   df <- df %>%
       head(-7)
   }
 
@@ -464,7 +464,7 @@ for (i in 1:length(files)) {
       )) %>%
       mutate(Result_Value = samp_value,
              Result_Unit = ifelse(Result_Unit == "%", Spike_Units, Result_Unit),
-             ample_Type = "NCP"
+             Sample_Type = "NCP"
              ) %>%
       rename(SampleCode = Parent_Sample) %>%
       filter(!grepl(lab_report, SampleCode))
@@ -489,14 +489,23 @@ for (i in 1:length(files)) {
     mutate(
       MDL = as.numeric(MDL),
       RDL = as.numeric(RDL),
-      Spike_Concentration = ifelse("Spike_Concentration" %in% colnames(qc_results),
-                                   as.numeric(Spike_Concentration), NA),
-      Spike_Measurement = ifelse("Spike_Measurement" %in% colnames(qc_results),
-                                 as.numeric(Spike_Measurement), NA),
-      Result_Value = as.numeric(Result_Value),
-      LCL = ifelse("LCL" %in% colnames(qc_results), as.numeric(LCL), NA),
-      UCL = ifelse("UCL" %in% colnames(qc_results), as.numeric(UCL), NA)
-    )
+      Result_Value = as.numeric(Result_Value))
+  if("Spike_Concentration" %in% colnames(qc_results)){
+    qc_results <- qc_results %>%
+      mutate(Spike_Concentration = as.numeric(Spike_Concentration))
+  }
+  if("Spike_Measurement" %in% colnames(qc_results)){
+    qc_results <- qc_results %>%
+      mutate(Spike_Measurement = as.numeric(Spike_Measurement))
+  }
+  if("LCL" %in% colnames(qc_results)){
+    qc_results <- qc_results %>%
+      mutate(LCL = as.numeric(LCL))
+  }
+  if("UCL" %in% colnames(qc_results)){
+    qc_results <- qc_results %>%
+      mutate(UCL = as.numeric(UCL))
+  }
 
   # ---- ESdat format ----
 
@@ -504,17 +513,16 @@ for (i in 1:length(files)) {
   sample <- qc_results %>%
     mutate(
       Lab_SampleID = SampleCode,
-      SampleCode = trimws(paste0(lab_report, "_", SampleCode, "_", Sample_Type)),
+      SampleCode = trimws(paste0(lab_report, "_", SampleCode, ifelse(Sample_Type == "NCP", "",
+                                                                     paste0("_", Sample_Type)))),
       Sampled_Date_Time = NA,
       Field_ID = NA,
       Depth = NA,
       Matrix_Type = "Water",
       # no spike blank option in ESdat, consider a LCS
       Sample_Type = ifelse(Sample_Type == "SB", "LCS", Sample_Type),
-      Parent_Sample = ifelse("Parent_Sample" %in% colnames(qc_results),
-                             ifelse(is.na(Parent_Sample), NA, 
-                                    paste0(lab_report, "_", Parent_Sample)),
-                             NA),
+      Parent_Sample = ifelse("Parent_Sample" %in% colnames(qc_results) & !is.na(Parent_Sample),
+                                    paste0(lab_report, "_", Parent_Sample), NA),
       SDG = lab_report,
       Lab_Name = "KCEL",
       
@@ -531,7 +539,8 @@ for (i in 1:length(files)) {
   chemistry <- qc_results %>%
     mutate(
       Lab_Analysis_ID = trimws(SampleCode),
-      SampleCode = trimws(paste0(lab_report, "_", SampleCode, "_", Sample_Type)),
+      SampleCode = trimws(paste0(lab_report, "_", SampleCode, ifelse(Sample_Type == "NCP", "",
+                                                                     paste0("_", Sample_Type)))),
       ChemCode = NA,
       OriginalChemName = OriginalChemName,
       Prefix = Prefix,
@@ -540,9 +549,9 @@ for (i in 1:length(files)) {
       Total_or_Filtered = if_else(grepl("Dissolved", OriginalChemName), "Filtered", "Total"),
       Result_Type = ifelse(Sample_Type %in% c("Field_D", "LAB_D", "MB", "NCP"), "REG", "SC"),
       Method_Type = NA,
-      Method_Name = Method_Name,
+      Method_Name = trimws(Method_Name),
       Extraction_Date = NA,
-      Anaysed_Date = NA,
+      Analysis_Date = NA,
       Lab_Preperation_Batch_ID = NA,
       Lab_Analysis_Batch_ID = NA,
       EQL = RDL,
@@ -557,11 +566,12 @@ for (i in 1:length(files)) {
       Dilution_Factor = NA,
       Spike_Concentration = Spike_Concentration,
       Spike_Measurement = Spike_Measurement,
-      Spike_Units = ifelse(is.na(Spike_Concentration), NA, Spike_Units),
+      Spike_Units = Spike_Units,
       .keep = "none"
     ) %>%
     filter(!is.na(Result)) %>%
-    distinct()
+    distinct(ChemCode, SampleCode, Total_or_Filtered, Result_Type, Method_Name, Lab_Analysis_ID, 
+             .keep_all = TRUE)
 
   # add chem codes, filter out parameters not in our report
   chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%

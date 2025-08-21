@@ -97,9 +97,9 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
              Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
              Result_Type = "REG",
              Method_Type = "",
-             Method_Name = Method,
+             Method_Name = trimws(Method),
              Extraction_Date = Preparation.Date,
-             Anaysed_Date = mdy_hm(Analysis.Date),
+             Analysis_Date = mdy_hm(Analysis.Date),
              Lab_Analysis_ID = Lab.ID,
              Lab_Preperation_Batch_ID = "",
              Lab_Analysis_Batch_ID = "",
@@ -129,7 +129,8 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
     qc_chem <- qc_chem %>%
       mutate(Total_or_Filtered = ifelse(Total_or_Filtered == "Filtered", "F", "T"))
     chemistry <- full_join(chemistry, qc_chem) %>%
-      distinct()
+      distinct(ChemCode, SampleCode, Total_or_Filtered, Result_Type, Method_Name, Lab_Analysis_ID, 
+               .keep_all = TRUE)
     }
   # Export Chemistry file
     write.csv(chemistry, paste0("data/KCEL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), 
