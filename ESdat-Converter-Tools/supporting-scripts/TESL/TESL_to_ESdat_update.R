@@ -48,7 +48,15 @@
     lab_report <- lab_reports[i]
   
     sample <- read.csv(grep(lab_report, sample_files, value = TRUE))
-    chemistry <- read.csv(grep(lab_report, chemistry_files, value = TRUE))
+    
+    chem_file <- grep(lab_report, chemistry_files, value = TRUE)
+    if (grep(".xls", chem_file)) {
+      chemistry <- read_xls(chem_file, sheet = "SAMP")
+      qc <- read_xls(chem_file, sheet = "QA")
+      chemistry <- rbind(chemistry, qc)
+    } else {
+      read.csv(chem_file)
+    }
   
   # Sample CSV dataframe building
     sample <- sample %>%
@@ -65,10 +73,11 @@
                                      grepl("SRM", Sample_Type) ~ "SRM",
                                      grepl("BS", Sample_Type) ~ "LCS",
                                      .default = "Normal") # Required
-    )
+             ) %>%
+      distinct(SampleCode, Sampled_Date_Time, Sample_Type, .keep_all = TRUE)
     
   # Export Sample file
-    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
   
   # Chemistry CSV dataframe building
     chemistry <- chemistry %>%
@@ -76,15 +85,19 @@
              Result = ifelse(Result == "ND", EQL, Result), # Required
              Total_or_Filtered = as.character(if_else(Total_or_Filtered == "D", "F", "T")),
              Extraction_Date = mdy_hms(Extraction_Date),
-             Anaysed_Date = mdy_hms(Analysed_Date),
+             Analysed_Date = mdy_hms(Analysed_Date),
              Lab_Analysis_ID = SampleCode,
              Lab_Qualifier = ifelse(Result == "ND", paste0("U", Lab_Qualifier), Lab_Qualifier)
-             )
+             ) %>%
+      select(-grep("Result_Type", names(chemistry), value = TRUE))
     
-    chemistry <- left_join(chemistry, chem_codes)
+    chemistry <- left_join(chemistry, chem_codes) %>%
+      mutate(Result_Type = case_when(Result_Type == "SUR"~"SUR",
+                                     grepl("-BS", SampleCode)~"SC",
+                                     .default = "REG"))
     
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
   }
   
 ## Import PDF lab reports and copy to secondary folder
