@@ -58,7 +58,7 @@
              Site_ID = proj_site,
              Location_Code = "",                                       # must match location codes in ESdat. write a function or fill in manually in ESdat
              Depth = Depth.m.,                                         # replace Depth.m with appropriate column
-             Matrix_Type = c("Soil", "Water", "Gas",       # Required  # pick one, or insert approriate column
+             Matrix_Type = c("Soil", "Water", "Gas",       # Required  # pick one, or insert appropriate column
                              "SoilGas", "other"),          
              Sample_Type = "Normal",                       # Required  # usually Normal, unless QA sample-Update accordingly
              Parent_Sample = "",                                       # only for duplicates or matrix spikes-update accordingly

@@ -1,36 +1,40 @@
-﻿Site_ID,Location_Code,Field_ID
-BU-Monitoring,Coal Creek RM0.8,CoalLow_21
-BU-Monitoring,Goff Creek RM0.3,Goff132nd_21
-BU-Monitoring,Idylwood Creek RM0.8,IdylwoodArdmore_21
-BU-Monitoring,Kelsey Creek RM0.2,COB_MCF
-BU-Monitoring,Kelsey Creek RM2.6,COB_KCF
-BU-Monitoring,Lakehurst Cr RM0.3,Lkhrst405RM0.3
-BU-Monitoring,Lewis Creek RM0.1,A617
-BU-Monitoring,Meydenbauer Cr RM0.1,MeydebauerBelRM0.1
-BU-Monitoring,Newcastle Cr RM0.0,NewcastleTrib_21
-BU-Monitoring,Newport Creek RM0.0,NewportBelRM0.0
-BU-Monitoring,Phantom Creek RM0.1,PhantomBelRM0.1
-BU-Monitoring,Richards Creek RM0.4,RichardsBelRM0.4
-BU-Monitoring,Sears Creek RM0.3,SearsRavine_21
-BU-Monitoring,Sturtevant Cr RM 0.1,Sturtevant8th_21
-BU-Monitoring,Sunset Creek RM0.1,SunsetRavine_21
-BU-Monitoring,Valley Creek RM0.7,ValleyAPTS_21
-BU-Monitoring,Vasa Creek RM0.1,VasaBelRM0.1
-BU-Monitoring,West Tributary RM0.4,WestTribFarmRM0.4
-BU-Monitoring,Yarrow Creek RM1.8,YarrowMain_21
-SAM_CEC,SEA_IND1,
-SAM_CEC,SEA_IND2,
-SAM_CEC,SEA_IND3,
-SAM_CEC,SNO_HDR,
-SAM_CEC,SNO_LDR,
-SAM_CEC,SNO_COM,
-SAM_CEC,TAC_HDR,
-SAM_CEC,TAC_COM,
-SAM_CEC,TAC_IND,
-SAM_CEC,KING_HDR,
-SAM_CEC,KING_LDR,
-SAM_CEC,KING_COM,
-SAM_CEC,CLRK_LDR,
-SAM_CEC,PIER_LDR,
-SAM_CEC,PIER_HDR,
-SAM_CEC,PIER_COM,
+﻿Project_ID,Site_ID,Location_Code,Field_ID
+19-07202-000,BU-Monitoring,Coal Creek RM0.8,CoalLow_21
+19-07202-000,BU-Monitoring,Goff Creek RM0.3,Goff132nd_21
+19-07202-000,BU-Monitoring,Idylwood Creek RM0.8,IdylwoodArdmore_21
+19-07202-000,BU-Monitoring,Kelsey Creek RM0.2,COB_MCF
+19-07202-000,BU-Monitoring,Kelsey Creek RM2.6,COB_KCF
+19-07202-000,BU-Monitoring,Lakehurst Cr RM0.3,Lkhrst405RM0.3
+19-07202-000,BU-Monitoring,Lewis Creek RM0.1,A617
+19-07202-000,BU-Monitoring,Meydenbauer Cr RM0.1,MeydebauerBelRM0.1
+19-07202-000,BU-Monitoring,Newcastle Cr RM0.0,NewcastleTrib_21
+19-07202-000,BU-Monitoring,Newport Creek RM0.0,NewportBelRM0.0
+19-07202-000,BU-Monitoring,Phantom Creek RM0.1,PhantomBelRM0.1
+19-07202-000,BU-Monitoring,Richards Creek RM0.4,RichardsBelRM0.4
+19-07202-000,BU-Monitoring,Sears Creek RM0.3,SearsRavine_21
+19-07202-000,BU-Monitoring,Sturtevant Cr RM 0.1,Sturtevant8th_21
+19-07202-000,BU-Monitoring,Sunset Creek RM0.1,SunsetRavine_21
+19-07202-000,BU-Monitoring,Valley Creek RM0.7,ValleyAPTS_21
+19-07202-000,BU-Monitoring,Vasa Creek RM0.1,VasaBelRM0.1
+19-07202-000,BU-Monitoring,West Tributary RM0.4,WestTribFarmRM0.4
+19-07202-000,BU-Monitoring,Yarrow Creek RM1.8,YarrowMain_21
+22-07975-000,SAM_CEC,SEA_IND1,
+22-07975-000,SAM_CEC,SEA_IND2,
+22-07975-000,SAM_CEC,SEA_IND3,
+22-07975-000,SAM_CEC,SNO_HDR,
+22-07975-000,SAM_CEC,SNO_LDR,
+22-07975-000,SAM_CEC,SNO_COM,
+22-07975-000,SAM_CEC,TAC_HDR,
+22-07975-000,SAM_CEC,TAC_COM,
+22-07975-000,SAM_CEC,TAC_IND,
+22-07975-000,SAM_CEC,KING_HDR,
+22-07975-000,SAM_CEC,KING_LDR,
+22-07975-000,SAM_CEC,KING_COM,
+22-07975-000,SAM_CEC,CLRK_LDR,
+22-07975-000,SAM_CEC,PIER_LDR,
+22-07975-000,SAM_CEC,PIER_HDR,
+22-07975-000,SAM_CEC,PIER_COM,
+24-08500-000,Ohop,OHOP-IN,
+24-08500-000,Ohop,OHOP-OUT,
+21-07565-001,Geneva,AS-IN,
+21-07565-001,Geneva,AS-OUT,
