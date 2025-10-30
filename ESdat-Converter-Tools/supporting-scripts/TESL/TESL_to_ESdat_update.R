@@ -47,15 +47,22 @@
     # Assign lab report
     lab_report <- lab_reports[i]
   
-    sample <- read.csv(grep(lab_report, sample_files, value = TRUE))
+    sample_file <- grep(lab_report, sample_files, value = TRUE)
+    if (grepl(".xls", sample_file)) {
+      sample <- read_xls(sample_file, sheet = "SAMP")
+      qc <- read_xls(sample_file, sheet = "QA")
+      sample <- rbind(sample, qc)
+    } else {
+      sample <- read.csv(sample_file)
+    }
     
     chem_file <- grep(lab_report, chemistry_files, value = TRUE)
-    if (grep(".xls", chem_file)) {
+    if (grepl(".xls", chem_file)) {
       chemistry <- read_xls(chem_file, sheet = "SAMP")
       qc <- read_xls(chem_file, sheet = "QA")
       chemistry <- rbind(chemistry, qc)
     } else {
-      read.csv(chem_file)
+      chemistry <- read.csv(chem_file)
     }
   
   # Sample CSV dataframe building
@@ -70,9 +77,10 @@
                                      grepl("BLK", Sample_Type) ~ "MB",
                                      grepl("DUP", Sample_Type) ~ "LAB_D",
                                      grepl("MS", Sample_Type) ~ "MS",
-                                     grepl("SRM", Sample_Type) ~ "SRM",
+                                     grepl("SRM|MRL|CCV|CAL|LCV|SCV|IBL", Sample_Type) ~ "SRM",
                                      grepl("BS", Sample_Type) ~ "LCS",
-                                     .default = "Normal") # Required
+                                     .default = "Normal"), # Required
+             Lab_Report_Number = lab_report
              ) %>%
       distinct(SampleCode, Sampled_Date_Time, Sample_Type, .keep_all = TRUE)
     
@@ -83,11 +91,12 @@
     chemistry <- chemistry %>%
       mutate(Prefix = ifelse(Result == "ND", "<", ""),
              Result = ifelse(Result == "ND", EQL, Result), # Required
-             Total_or_Filtered = as.character(if_else(Total_or_Filtered == "D", "F", "T")),
+             Total_or_Filtered = as.character(if_else(grepl("Dissolved", OriginalChemName)|OriginalChemName=="Phosphate, Ortho", "F", "T")),
              Extraction_Date = mdy_hms(Extraction_Date),
              Analysed_Date = mdy_hms(Analysed_Date),
              Lab_Analysis_ID = SampleCode,
-             Lab_Qualifier = ifelse(Result == "ND", paste0("U", Lab_Qualifier), Lab_Qualifier)
+             Lab_Qualifier = ifelse(Result == "ND", paste0("U", Lab_Qualifier), Lab_Qualifier),
+             Lab_Report_Number = lab_report
              ) %>%
       select(-grep("Result_Type", names(chemistry), value = TRUE))
     
