@@ -32,7 +32,7 @@
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/AmTest/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
-  proj_site     <- config$project_info$project_site
+  #proj_site     <- config$project_info$project_site
   
 ## Retrieve lab report names
   # Assumes lab report number is in file name. Update character numbers based on file names
@@ -46,8 +46,8 @@
     lab_report <- lab_reports[i]
   # Sample CSV dataframe building
     sample <- df %>%
-      mutate(SampleCode = paste0(lab_report, "_", Sample_ID), 
-             Sampled_Date_Time = paste0(Field_Collection_Start_Date, "", Field_Collection_Start_Time),
+      mutate(SampleCode = ifelse(Result_Lab_Name == "AmTest Inc.", paste0(lab_report, "_", Sample_ID), paste0(lab_report, "_", Sample_ID, "-B")), 
+             Sampled_Date_Time = paste0(Field_Collection_Start_Date, " ", Field_Collection_Start_Time),
              Field_ID = Study_Specific_Location_ID,
              # TODO: Site_ID = proj_site,
              Location_Code = "",                                
@@ -60,21 +60,22 @@
              Lab_SampleID = Sample_ID,                        
              Lab_Comments = "",                                        
              Lab_Report_Number = lab_report,               
-             .keep = "none")
+             .keep = "none") %>%
+      distinct()
     
   # Export Sample file
     write.csv(sample, paste0("data/AmTest/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
-      mutate(SampleCode = paste0(lab_report, "_", Sample_ID),
-             ChemCode = "",                                # Required  # add appropriate column, or remove and join with chem_code_lookup.csv 
+      mutate(SampleCode = ifelse(Result_Lab_Name == "AmTest Inc.", paste0(lab_report, "_", Sample_ID), paste0(lab_report, "_", Sample_ID, "-B")),
+             #ChemCode = "",                                # Required  # add appropriate column, or remove and join with chem_code_lookup.csv 
              OriginalChemName = Result_Parameter_Name,
-             Prefix = "",                                  # Required if below the detection limit (< or >)
+             Prefix = ifelse(grepl("U",Result_Data_Qualifier), "<", ""),                                  # Required if below the detection limit (< or >)
              Result = Result_Value,                       
              Result_Unit = Result_Value_Units,                      
              Total_or_Filtered = as.character(ifelse(Fraction_Analyzed=="Total", "T", "F")),
-             Result_Type = "REG",
+             #Result_Type = "REG",
              Method_Type = "",                             # Required  # PAH, pesticides, inorganic, metals, etc.
              Method_Name = Result_Method,
              Extraction_Method = Digestion_Method,

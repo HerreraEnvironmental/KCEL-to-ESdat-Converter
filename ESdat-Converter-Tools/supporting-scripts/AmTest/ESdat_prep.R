@@ -20,17 +20,17 @@
   library(zip)
 
 ## Run other scripts
-  source("ESdat-Converter-Tools/supporting-scripts/EXAMPLE/EXAMPLE_to_ESdat.R", local = T)
-  source("ESdat-Converter-Tools/supporting-scripts/EXAMPLE/ESdat_header.R", local = T)
+  source("ESdat-Converter-Tools/supporting-scripts/AmTest/AmTest_to_ESdat.R", local = T)
+  source("ESdat-Converter-Tools/supporting-scripts/AmTest/ESdat_header.R", local = T)
 
 ## Copy relevant files to lab report folders and zip files
   for(i in 1:length(lab_reports)){
     report_num <- lab_reports[i]
-    ESdat_files <- grep(paste0(proj_num, ".", report_num), list.files("data/EXAMPLE/data_secondary"), value = TRUE)
+    ESdat_files <- grep(paste0(proj_num, ".", report_num), list.files("data/AmTest/data_secondary"), value = TRUE)
     for(k in 1:length(ESdat_files)){
       if (dir.exists(paste0("lab_reports/", report_num))){
       } else {dir.create(paste0("lab_reports/", report_num))}
-      file.copy(paste0("data/EXAMPLE/data_secondary/", ESdat_files[k]), paste0("lab_reports/", report_num, "/", ESdat_files[k]), overwrite = TRUE )
+      file.copy(paste0("data/AmTest/data_secondary/", ESdat_files[k]), paste0("lab_reports/", report_num, "/", ESdat_files[k]), overwrite = TRUE )
     }
 ## Change working directory to avoid internal folders in zipfile
     my_wd<-getwd()

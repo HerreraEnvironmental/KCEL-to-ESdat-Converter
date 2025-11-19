@@ -1,31 +1,33 @@
-﻿OriginalChemName,ChemCode
-Anatoxin-a,64285-06-9
-Microcystin,101043-37-2
-Total Phosphorus,7723-14-0
-Pheophytin a,603-17-8
-Chlorophyll a,42617-16-3
-Ammonia Nitrogen,Ammonia as N
-"Calcium, Total, ICP-MS",Calcium
-"Conductivity, Field",Conductivity @ 25oC
-"Copper, Dissolved, ICP-MS",7440-50-8
-"Dissolved Oxygen, Field",Dissolved Oxygen
-Escherichia coli,E. Coli
-Fecal Coliform,Faecal Coliforms
-"Hardness, Calc",CarbHard_as_CaCO3
-"Magnesium, Total, ICP-MS",Magnesium
-Nitrite + Nitrate Nitrogen,NO3+NO2 (as N)
-Orthophosphate Phosphorus,Ortho Phosphorus
-"pH, Field",pH (Field)
-"Sample Temperature, Field",Temperature
-Silica,Silica
-Total Alkalinity,Alkalinity (total)
-Total Nitrogen,7727-37-9
-Total Suspended Solids,TSS
-Turbidity,Turb
-"Zinc, Dissolved, ICP-MS",7440-66-6
-> 500 um,
-125 - 62.5 um,
-250 - 125 um,
-5 - 0.5 um,
-500 - 250 um,
-62.5 - 5 um,
+﻿OriginalChemName,ChemCode,Result_Type
+13C6-6PPD-Quinone,STL02939,SUR
+6PPD-Quinone,2754428-18-5,REG
+Aroclor 1016,12674-11-2,REG
+Aroclor 1221,11104-28-2,REG
+Aroclor 1232,11141-16-5,REG
+Aroclor 1242,53469-21-9,REG
+Aroclor 1248,12672-29-6,REG
+Aroclor 1254,11097-69-1,REG
+Aroclor 1260,11096-82-5,REG
+Aroclor 1262,37324-23-5,REG
+Aroclor 1268,11100-14-4,REG
+Decachlorobiphenyl,2051-24-3,SUR
+"Tetrachloro-1,1'-biphenyl",877-09-8,SUR
+Total Phosphorus,7723-14-0,REG
+Escherichia coli,E. Coli,REG
+Fecal Coliform,Faecal Coliforms,REG
+Hardness as CaCO3,CarbHard_as_CaCO3,REG
+Magnesium,7439-95-4,REG
+Calcium,7440-70-2,REG
+Nitrite + Nitrate Nitrogen,NO3+NO2 (as N),REG
+Orthophosphate,Ortho Phosphorus,REG
+Total Alkalinity,Alkalinity (total),REG
+Total Nitrogen,7727-37-9,REG
+Total Suspended Solids,TSS,REG
+Zinc,7440-66-6,REG
+Copper,7440-50-8,REG
+> 500 um,>500um,REG
+125 - 62.5 um,125-62.5um,REG
+250 - 125 um,250-125um,REG
+5 - 0.5 um,5-0.5um,REG
+500 - 250 um,500-250um,REG
+62.5 - 5 um,62.5-5um,REG
