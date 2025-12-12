@@ -3,7 +3,7 @@
 ## Purpose of script:   Convert TESL EDDs to ESdat format
 ## Author:              N. VandePutte
 ## Date Created:        2025-03-07
-## Date Updated:        2025-03-11
+## Date Updated:        2025-12-11
 ## Project #:           N/A
 ## Task # (optional):   N/A
 ## ---------------------------
@@ -40,13 +40,56 @@
   #   filter(Site_ID == proj_site)
   
 ## Retrieve lab report names
-  lab_reports <- substring(list.files("data/TESL/data_raw", pattern = "*ChemistryFile*"), 1, 7) # TODO adjust to TESL report names
+  lab_reports <- str_match(chemistry_files, pattern = "data/TESL/data_raw/(.*)_ChemistryFile[0-9]+.csv")[,2]
+  lab_reports <- lapply(lab_reports, function(x){
+    ifelse(nchar(x)>7, substring(x, 1, 7), x)
+  })
+# lab_reports <- lapply(lab_reports, 
+# function(x){
+#   if (grepl(",", x)){
+#    str_split(x, pattern = ", ") 
+#   } else
+#   if (grepl(".", x)){
+#     str_split(x, pattern = "\\.")
+#   } else {
+#     x
+#   }
+#   }
+# )
+
+# test <- lapply(lab_reports, function(x){
+#   num <- x[[1]][[1]][1]
+#  if (length(x[[1]][[1]])>1) {
+#   for (i in 2:length(x[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(x[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+# }
+#   num
+# })
+# test <- lapply(lab_reports, function(x){
+#   num <- x[[1]][[1]][1]
+#  if (length(x[[1]][[1]])>1) {
+#   for (i in 2:length(x[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(x[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+# }
+#  num
+# })
+# for (i in 1:length(lab_reports)){
+#   num <- lab_reports[[i]][[1]][1]
+#   if (length(lab_reports[[i]][[1]])>1) {
+#   num <- lab_reports[[i]][[1]][1]
+#   for (i in 2:length(lab_reports[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(lab_reports[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+#   }}
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
   for(i in 1:length(lab_reports)){
     # Assign lab report
-    lab_report <- lab_reports[i]
-  
+    lab_report <- unlist(lab_reports[i])
+    # first_rep <- substring(lab_report, 1, 7)
+
     sample_file <- grep(lab_report, sample_files, value = TRUE)
     if (grepl(".xls", sample_file)) {
       sample <- read_xls(sample_file, sheet = "SAMP")
