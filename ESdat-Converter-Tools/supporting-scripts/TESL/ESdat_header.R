@@ -30,10 +30,10 @@
   proj_ID       <- config$project_info$project_name
 
 ## Import files
-  # Raw files
-  files         <- list.files("data/TESL/data_raw", pattern = "*SampleFile*")
-  # Lab report names
-  lab_reports   <- substring(files, 1, 7)
+  lab_reports <- str_match(chemistry_files, pattern = "data/TESL/data_raw/(.*)_ChemistryFile[0-9]+.csv")[,2]
+  lab_reports <- lapply(lab_reports, function(x){
+    ifelse(nchar(x)>7, substring(x, 1, 7), x)
+  })
   
   # Read in secondary files
   files         <- list.files("data/TESL/data_secondary")

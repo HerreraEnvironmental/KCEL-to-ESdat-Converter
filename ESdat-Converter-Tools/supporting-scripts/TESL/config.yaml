@@ -4,17 +4,26 @@
 
 # SAM_CEC
 project_info:
-  project_number: "22-07975-000" # USE PROJ # FROM ESDAT
-  project_name:   "SAM CEC Monitoring" # USE PROJ NAME FROM KCEL EDD FILENAME
-  project_site:   "SAM_CEC"
-  locations: ["KING_LDR","KING_COM","KING_HDR","PIER_LDR",
-              "PIER_HDR","PIER_COM","TAC_IND","TAC_HDR",
-              "TAC_COM","SEA_IND1","SEA_IND2","SEA_IND3",
-              "SNO_LDR","SNO_HDR","SNO_COM","CLRK_LDR"]
-
-# # Ohop              
-# project_info: 
-#   project_number: "24-08500-000" # USE PROJ # FROM ESDAT
-#   project_name:   "Ohop Creek" # USE PROJ NAME FROM KCEL EDD FILENAME
-#   project_site:   "Ohop"
-#   locations: ["OHOP-IN", "OHOP-OUT"]
+  project_number: #"24-08500-000"  # Ohop
+                  "22-07975-000" # SAM CEC
+  project_name:   #"Ohop Creek" 
+                  "SAM CEC Monitoring" 
+  project_site:  #"Ohop" 
+                "SAM_CEC"
+  locations: #["OHOP-IN", "OHOP-OUT"]
+  - KING_LDR
+  - KING_COM
+  - KING_HDR
+  - PIER_LDR
+  - PIER_HDR
+  - PIER_COM
+  - TAC_IND
+  - TAC_HDR
+  - TAC_COM
+  - SEA_IND1
+  - SEA_IND2
+  - SEA_IND3
+  - SNO_LDR
+  - SNO_HDR
+  - SNO_COM
+  - CLRK_LDR

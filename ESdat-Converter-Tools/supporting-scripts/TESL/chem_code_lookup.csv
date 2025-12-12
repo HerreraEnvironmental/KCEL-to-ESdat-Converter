@@ -9,6 +9,7 @@ Total Kjeldahl Nitrogen,TKN,
 Total Suspended Solids,TSS,
 "Zinc, Dissolved",7440-66-6,
 Zinc,7440-66-6,
+"Hardness, Total as CaCO3",CarbHard_as_CaCO3,
 6PPD-Quinone,2754428-18-5,
 6PPD-Quinone (phenyl-13C6),2754428-18-5,SUR
 D5-6PPD-Quinone,2754428-18-5_sur,SUR
