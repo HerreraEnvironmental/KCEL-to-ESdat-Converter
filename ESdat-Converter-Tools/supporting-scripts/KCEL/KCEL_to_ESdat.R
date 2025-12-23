@@ -48,6 +48,17 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
   # Set dataframe for iteration
     df <-dfs[[i]]
     
+    field_id <- ""
+    if ("Textvalue" %in% colnames(df)){
+      field_id <- df %>%
+        filter(Parameter.Name=="Client Locator") %>%
+        select(Lab.ID, Textvalue) %>%
+        rename(Field_ID = Textvalue,
+          Lab_SampleID = Lab.ID)
+
+      df <- df %>%
+        filter(Parameter.Name != "Client Locator")
+    }
   # Assign lab report
     lab_report <- lab_reports[i]
     
@@ -58,12 +69,12 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
       qc_sample <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatSample.csv"))
       qc_chem <- read.csv(paste0("data/KCEL/data_secondary/", lab_report, "_QC.ESdatChemistry.csv"))
     }
-      
+  
   # Sample CSV dataframe building
     sample <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", Lab.ID),
              Sampled_Date_Time = Collect.Date,
-             Field_ID = Locator,
+             Field_ID = Lab.ID,
              Depth = Depth.m.,
              Matrix_Type = "Water",
              Sample_Type = "Normal",
@@ -75,6 +86,12 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
              Lab_Report_Number = lab_report,
              .keep = "none") %>%
       distinct()
+
+   if (is.data.frame(field_id)){
+     sample <- sample %>%
+       select(-Field_ID) %>%
+       full_join(field_id)
+   }
     
   # join QC
     if(qc_flag == TRUE){
@@ -93,13 +110,14 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
              OriginalChemName = Parameter.Name,
              Prefix = ifelse(Qualifier=="<MDL", "<", ""),
              Result = ifelse(Qualifier=="<MDL", MDL, Result),
-             Result_Unit = ifelse(Units=="mg CaCO3/L", "mg/L", Units),
+             Result_Unit = ifelse(Units=="mg CaCO3/L", "mg/L", 
+                ifelse(Units=="% Volume", "%", Units)),
              Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
              Result_Type = "REG",
              Method_Type = "",
              Method_Name = trimws(Method),
-             Extraction_Date = Preparation.Date,
-             Analysis_Date = mdy_hm(Analysis.Date),
+             Extraction_Date = parse_date_time(Preparation.Date, orders = c("%m-%d-%Y %H:%M", "%d-%b-%y %H:%M:s", "%d-%b-%y %H:%M")),
+             Analysed_Date = parse_date_time(Analysis.Date, orders = c("%m-%d-%Y %H:%M", "%d-%b-%y %H:%M:s", "%d-%b-%y %H:%M")),
              Lab_Analysis_ID = Lab.ID,
              Lab_Preperation_Batch_ID = "",
              Lab_Analysis_Batch_ID = "",
@@ -107,7 +125,8 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
              RDL = RDL,
              MDL = MDL,
              ODL = "",
-             Detection_Limit_Units = Units,
+             Detection_Limit_Units = ifelse(Units=="mg CaCO3/L", "mg/L", 
+                ifelse(Units=="% Volume", "%", Units)),
              Lab_Comments = "",
              Lab_Qualifier = Qualifier,
              UCL = as.numeric(NA),

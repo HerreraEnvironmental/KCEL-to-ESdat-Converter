@@ -18,3 +18,19 @@ Total Kjeldahl Nitrogen,TKN
 Total Suspended Solids,TSS
 Turbidity,Turb
 Zinc,7440-66-6
+% Solids,solids
+PHI +1.00 (0.50 mm),PHI +1
+PHI +10.0 (0.001 mm),PHI +10
+PHI +2.00 (0.25 mm),PHI +2
+PHI +3.00 (0.125 mm),PHI +3
+PHI +4.00 (0.063 mm),PHI +4
+PHI +5.00 (0.032 mm)    Silt,PHI +5
+PHI +6.00 (0.016 mm),PHI +6
+PHI +7.00 (0.008 mm),PHI +7
+PHI +8.00 (0.004 mm),PHI +8
+PHI +9.00 (0.002 mm)    Clay,PHI +9
+PHI >10.0 (< 0.001 mm),PHI >10
+PHI 0.00 (1.00 mm)    Sand,PHI 0
+PHI -1.00 (2.00 mm),PHI -1
+PHI -2.00 (4.00 mm),PHI -2
+PHI -2.25 (4.75 mm)    Gravel,PHI -2.25
