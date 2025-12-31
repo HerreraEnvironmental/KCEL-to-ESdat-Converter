@@ -49,7 +49,7 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
     df <-dfs[[i]]
     
     field_id <- ""
-    if ("Textvalue" %in% colnames(df)){
+    if ("Client Locator" %in% df$Parameter.Name){
       field_id <- df %>%
         filter(Parameter.Name=="Client Locator") %>%
         select(Lab.ID, Textvalue) %>%
@@ -74,7 +74,7 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
     sample <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", Lab.ID),
              Sampled_Date_Time = Collect.Date,
-             Field_ID = Lab.ID,
+             Field_ID = ifelse(proj_num=="19-07202-000", Lab.ID, paste0(Locator, "_", format(mdy_hm(Collect.Date), "%Y%m%d"))),
              Depth = Depth.m.,
              Matrix_Type = "Water",
              Sample_Type = "Normal",
@@ -108,8 +108,8 @@ if(any(grep("QC.xlsx", list.files("data/KCEL/data_raw")))){
       mutate(SampleCode = paste0(lab_report, "_", Lab.ID),
              ChemCode = "",
              OriginalChemName = Parameter.Name,
-             Prefix = ifelse(Qualifier=="<MDL", "<", ""),
-             Result = ifelse(Qualifier=="<MDL", MDL, Result),
+             Prefix = ifelse(grepl("<MDL", Qualifier), "<", ""),
+             Result = ifelse(grepl("<MDL", Qualifier), MDL, Result),
              Result_Unit = ifelse(Units=="mg CaCO3/L", "mg/L", 
                 ifelse(Units=="% Volume", "%", Units)),
              Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
