@@ -20,6 +20,24 @@ Orthophosphate Phosphorus,Ortho Phosphorus
 Silica,Silica
 Total Alkalinity,Alkalinity (total)
 Total Nitrogen,7727-37-9
-Total Suspended Solids,TSS
 Turbidity,Turb
 "Zinc, Dissolved, ICP-MS",7440-66-6
+Total Suspended Solids,TSS
+6ppd-quinone,2754428-18-5
+250 Micron (less than),<250um
+250 Micron to 500 Micron (less than),250-500um
+500 Micron (equal to/more than),>500um
+Clay,%_Clay
+Fines,%Fines
+Sand<500,%Sand
+Silt,%Silt
+p+10.0(more than),PHI >10
+p+10.0,PHI +10
+p+2.00,PHI +2
+p+3.00,PHI +3
+p+4.00,PHI +4
+p+5.00,PHI +5
+p+6.00,PHI +6
+p+7.00,PHI +7
+p+8.00,PHI +8
+p+9.00,PHI +9

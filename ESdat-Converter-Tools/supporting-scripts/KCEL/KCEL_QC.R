@@ -36,7 +36,7 @@ is.empty <- function(df){
 ## Iterate through lab reports and create Sample and Chemistry CSV files
 for (i in 1:length(files)) {
   # Set dataframe for iteration
-  df <- read_xlsx(files[i], col_names = FALSE)
+  df <- read_xlsx(files[i], col_names = FALSE, col_types = "text")
   # Assign lab report
   lab_report <- lab_reports[i]
 
