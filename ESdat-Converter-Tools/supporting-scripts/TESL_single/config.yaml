@@ -4,26 +4,24 @@
 
 # SAM_CEC
 project_info:
-  project_number: #"24-08500-000"  # Ohop
-                  "22-07975-000" # SAM CEC
-  project_name:   #"Ohop Creek" 
-                  "SAM CEC Monitoring" 
-  project_site:  #"Ohop" 
-                "SAM_CEC"
+  project_number: "22-07965-000" #Tacoma inline 
+  project_name:  "Tacoma In-Line" 
+  project_site: "Tacoma-CBs"
   locations: #["OHOP-IN", "OHOP-OUT"]
-  - KING_LDR
-  - KING_COM
-  - KING_HDR
-  - PIER_LDR
-  - PIER_HDR
-  - PIER_COM
-  - TAC_IND
-  - TAC_HDR
-  - TAC_COM
-  - SEA_IND1
-  - SEA_IND2
-  - SEA_IND3
-  - SNO_LDR
-  - SNO_HDR
-  - SNO_COM
-  - CLRK_LDR
+    - 100014_SWMH111207
+    - 100060_SWMH111644
+    - 100101_OCin
+    - 100101_OCout
+    - 100102_OCin
+    - 100102_OCout
+    - 100113_SWMH109786
+    - 100122_SWMH103165
+    - 100124_SWMH103825
+    - 100143_SWDP100854
+    - 100143_SWMH113087
+    - 100143_SWMH113088
+    - 100143_SWMH113102
+    - 100143_SWMH113105
+    - 100225_SWMH113891
+    - 100368_SWMH111322
+    - 100481_SWMH112441

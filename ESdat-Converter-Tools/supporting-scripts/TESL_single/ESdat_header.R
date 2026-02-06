@@ -25,18 +25,18 @@
   temp_dir <- tempdir()
 
 ## Import config.yaml file
-  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL/config.yaml")
+  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL_single/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
 
 ## Import files
-  lab_reports <- str_match(chemistry_files, pattern = "data/TESL/data_raw/(.*)_ChemistryFile[0-9]+.csv")[,2]
-  lab_reports <- lapply(lab_reports, function(x){
-    ifelse(nchar(x)>7, substring(x, 1, 7), x)
-  })
+  # Raw files
+  files         <- list.files("data/TESL/data_raw", pattern = "*SampleFile*")
+  # Lab report names
+  lab_reports   <- substring(files, 1, 7)
   
   # Read in secondary files
-  files         <- list.files("data/TESL/data_secondary")
+  files         <- list.files("data/TESL_single/data_secondary")
   # Build XML based on project
   for (i in 1:length(lab_reports)){
     report_date <- as.character(Sys.Date())
@@ -85,6 +85,6 @@
     # qual_2 = newXMLNode("Lab_Qualifier", parent = qualifier_node)
     # xmlAttrs(qual_2) = c(Description = "The concentration is below the reporting limit", Code = "J")
     
-    saveXML(doc, file = paste0("data/TESL/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
+    saveXML(doc, file = paste0("data/TESL_single/data_secondary/", proj_num, ".", report_num, ".ESdatHeader.xml"))
     
   }

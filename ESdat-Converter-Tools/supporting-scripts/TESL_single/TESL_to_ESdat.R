@@ -24,16 +24,16 @@
 
 ## Import files
   # Raw files
-  files <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*.xls")
+  files <- list.files("data/TESL_single/data_raw", full.names = TRUE, pattern = "*.xls")
   # sample data
   sampdata <- lapply(files, function(files)read_xls(files, sheet = "SAMPDATA"))
   # qc sample data
   qcdata <- lapply(files, function(files)read_xls(files, sheet = "QCDATA"))
   # Chem codes
-  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL/chem_code_lookup.csv") # TODO update original chem names with TESL values
+  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL_single/chem_code_lookup.csv") # TODO update original chem names with TESL values
 
 ## Import config.yaml file
-  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL/config.yaml")
+  config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL_single/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
   proj_site     <- config$project_info$project_site
@@ -42,7 +42,7 @@
   #   filter(Site_ID == proj_site)
   
 ## Retrieve lab report names
-  lab_reports <- substring(list.files("data/TESL/data_raw", pattern = "*.xls"), 1, 7) # TODO adjust to TESL report names
+  lab_reports <- substring(list.files("data/TESL_single/data_raw", pattern = "*.xls"), 1, 7) # TODO adjust to TESL report names
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
   for(i in 1:length(files)){
@@ -59,7 +59,9 @@
              Site_ID = proj_site,
              Location_Code = sub("^(([^_]*_){1}[^_]*).*", "\\1", SAMPLENAME), # everything before 2nd underscore in Sample name, specific to CEC proj
              Matrix_Type = MATRIX, # Required
-             Sample_Type = ifelse(grepl("DUP", SAMPLENAME), "Field_D", ifelse(grepl("QA", SAMPLENAME), "Field_B", "Normal")), # Required
+             Sample_Type = case_when(grepl("DUP", Field_ID) ~ "Field_D", 
+                                     grepl("QA", Field_ID) ~ "Field_B",
+                                     .default = "Normal"), # Required
              Parent_Sample = "", # TODO see if parent sample is required for field dups when uploading
              SDG = lab_report, # Required
              Lab_Name = "TESL", # Required
@@ -73,7 +75,12 @@
     qcsample <- qc %>%
       mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
              Matrix_Type = MATRIX, # Required
-             Sample_Type = QCTYPE, # TODO match TESL codes to ESdat codes
+             Sample_Type = case_when(grepl("BLK", QCTYPE) ~ "MB",
+                                     grepl("DUP", QCTYPE) ~ "LAB_D",
+                                     grepl("MS", QCTYPE) ~ "MS",
+                                     grepl("SRM|MRL|CCV|CAL|LCV|SCV|IBL", QCTYPE) ~ "SRM",
+                                     grepl("BS", QCTYPE) ~ "LCS",
+                                     .default = "Normal"), # Required
              Parent_Sample = ifelse(SOURCEID != "" | !is.na(SOURCEID), paste0(lab_report, "_", SOURCEID), ""),
              SDG = lab_report, # Required
              Lab_Name = "TESL", # Required
@@ -85,15 +92,15 @@
     sample <- full_join(sample, qcsample)
     
   # Export Sample file
-    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/TESL_single/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
       mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
              ChemCode = CASNUMBER, # Required
              OriginalChemName = ANALYTE, # Required
-             Prefix = "",
-             Result = Result, # Required
+             Prefix = ifelse(Result == "ND", "<", ""),
+             Result = ifelse(Result == "ND", RL, Result), # Required
              Result_Unit = UNITS, # Required
              #Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
              Result_Type = "REG", # Required
@@ -101,7 +108,7 @@
              Method_Name = METHODNAME, # Required
              Extraction_Method = PREPNAME,
              Extraction_Date = PREPDATE,
-             Anaysed_Date = mdy_hm(ANADATE),
+             Anaysed_Date = mdy_hms(ANADATE),
              Lab_Analysis_ID = LABSAMPID, # Required
              Lab_Preperation_Batch_ID = "", # Required
              Lab_Analysis_Batch_ID = "", # Required
@@ -111,7 +118,7 @@
              #ODL = "",
              Detection_Limit_Units = UNITS, # Required
              Lab_Comments = "",
-             Lab_Qualifier = LNOTE,
+             Lab_Qualifier = ifelse(Result == "ND", "U", ""),
              # UCL = "",
              # LCL = "",
              Dilution_Factor = DILUTION,
@@ -125,7 +132,7 @@
              ChemCode = CASNUMBER, # Required
              OriginalChemName = ANALYTE, # Required
              Prefix = "",
-             Result = Result, # Required
+             Result = RESULT, # Required
              Result_Unit = UNITS, # Required
              #Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
              Result_Type = ifelse(SURROGATE == TRUE, "SUR", "REG"), # Required
@@ -133,7 +140,7 @@
              Method_Name = METHODNAME, # Required
              Extraction_Method = PREPNAME,
              Extraction_Date = PREPDATE,
-             Anaysed_Date = mdy_hm(ANADATE),
+             Anaysed_Date = mdy_hms(ANADATE),
              Lab_Analysis_ID = LABSAMPID, # Required
              Lab_Preperation_Batch_ID = "", # Required
              Lab_Analysis_Batch_ID = "", # Required
@@ -158,11 +165,11 @@
       select(-c(ChemCode.x, ChemCode.y))
     
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/TESL_single/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
   }
   
 ## Import PDF lab reports and copy to secondary folder
-  pdfs <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*.pdf")
+  pdfs <- list.files("data/TESL_single/data_raw", full.names = TRUE, pattern = "*.pdf")
   for (i in 1:length(pdfs)){
-    file.copy(pdfs[i], paste0("data/TESL/data_secondary/", proj_num, ".", lab_reports[i], ".ESdat.pdf"))
+    file.copy(pdfs[i], paste0("data/TESL_single/data_secondary/", proj_num, ".", lab_reports[i], ".ESdat.pdf"))
     }
