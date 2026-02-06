@@ -3,7 +3,7 @@
 ## Purpose of script:   Convert TESL EDDs to ESdat format
 ## Author:              N. VandePutte
 ## Date Created:        2025-03-07
-## Date Updated:        2025-03-11
+## Date Updated:        2025-12-11
 ## Project #:           N/A
 ## Task # (optional):   N/A
 ## ---------------------------
@@ -24,141 +24,132 @@
 
 ## Import files
   # Raw files
-  files <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*.xls")
-  # sample data
-  sampdata <- lapply(files, function(files)read_xls(files, sheet = "SAMPDATA"))
-  # qc sample data
-  qcdata <- lapply(files, function(files)read_xls(files, sheet = "QCDATA"))
-  # Chem codes
-  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL/chem_code_lookup.csv") # TODO update original chem names with TESL values
+  chemistry_files <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*ChemistryFile*")
+  sample_files <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*SampleFile*")
+  
+  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL/chem_code_lookup.csv")
 
 ## Import config.yaml file
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL/config.yaml")
   proj_num      <- config$project_info$project_number
   proj_ID       <- config$project_info$project_name
   proj_site     <- config$project_info$project_site
+  locations     <- config$project_info$locations
   
   # locations <- read.csv("ESdat_locations.csv") %>%
   #   filter(Site_ID == proj_site)
   
 ## Retrieve lab report names
-  lab_reports <- substring(list.files("data/TESL/data_raw", pattern = "*.xls"), 1, 7) # TODO adjust to TESL report names
+  lab_reports <- str_match(chemistry_files, pattern = "data/TESL/data_raw/(.*)_ChemistryFile[0-9]+.csv")[,2]
+  lab_reports <- lapply(lab_reports, function(x){
+    ifelse(nchar(x)>7, substring(x, 1, 7), x)
+  })
+# lab_reports <- lapply(lab_reports, 
+# function(x){
+#   if (grepl(",", x)){
+#    str_split(x, pattern = ", ") 
+#   } else
+#   if (grepl(".", x)){
+#     str_split(x, pattern = "\\.")
+#   } else {
+#     x
+#   }
+#   }
+# )
+
+# test <- lapply(lab_reports, function(x){
+#   num <- x[[1]][[1]][1]
+#  if (length(x[[1]][[1]])>1) {
+#   for (i in 2:length(x[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(x[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+# }
+#   num
+# })
+# test <- lapply(lab_reports, function(x){
+#   num <- x[[1]][[1]][1]
+#  if (length(x[[1]][[1]])>1) {
+#   for (i in 2:length(x[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(x[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+# }
+#  num
+# })
+# for (i in 1:length(lab_reports)){
+#   num <- lab_reports[[i]][[1]][1]
+#   if (length(lab_reports[[i]][[1]])>1) {
+#   num <- lab_reports[[i]][[1]][1]
+#   for (i in 2:length(lab_reports[[1]][[1]])){
+#     num <- paste0(num, "-", str_extract(lab_reports[[1]][[1]][i], "[0-9]{2}$"))
+#   }
+#   }}
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
-  for(i in 1:length(files)){
-  # Set dataframes for iteration
-    df <-sampdata[[i]]
-    qc <-qcdata[[i]]
-  # Assign lab report
-    lab_report <- lab_reports[i]
+  for(i in 1:length(lab_reports)){
+    # Assign lab report
+    lab_report <- unlist(lab_reports[i])
+    # first_rep <- substring(lab_report, 1, 7)
+
+    sample_file <- grep(lab_report, sample_files, value = TRUE)
+    if (grepl(".xls", sample_file)) {
+      sample <- read_xls(sample_file, sheet = "SAMP")
+      qc <- read_xls(sample_file, sheet = "QA")
+      sample <- rbind(sample, qc)
+    } else {
+      sample <- read.csv(sample_file)
+    }
+    
+    chem_file <- grep(lab_report, chemistry_files, value = TRUE)
+    if (grepl(".xls", chem_file)) {
+      chemistry <- read_xls(chem_file, sheet = "SAMP")
+      qc <- read_xls(chem_file, sheet = "QA")
+      chemistry <- rbind(chemistry, qc)
+    } else {
+      chemistry <- read.csv(chem_file)
+    }
+  
   # Sample CSV dataframe building
-    sample <- df %>%
-      mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
-             Sampled_Date_Time = SAMPDATE,
-             Field_ID = SAMPLENAME,
+    sample <- sample %>%
+      mutate(Sampled_Date_Time = mdy_hms(Sampled_Date_Time),
              Site_ID = proj_site,
-             Location_Code = sub("^(([^_]*_){1}[^_]*).*", "\\1", SAMPLENAME), # everything before 2nd underscore in Sample name, specific to CEC proj
-             Matrix_Type = MATRIX, # Required
-             Sample_Type = ifelse(grepl("DUP", SAMPLENAME), "Field_D", ifelse(grepl("QA", SAMPLENAME), "Field_B", "Normal")), # Required
-             Parent_Sample = "", # TODO see if parent sample is required for field dups when uploading
-             SDG = lab_report, # Required
-             Lab_Name = "TESL", # Required
-             Lab_SampleID = LABSAMPID, # Required
-             #Lab_Comments = "",
-             Lab_Report_Number = lab_report, # Required
-             .keep = "none")
-    
-    #sample <- left_join(sample, locations)
-  # QC samples
-    qcsample <- qc %>%
-      mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
-             Matrix_Type = MATRIX, # Required
-             Sample_Type = QCTYPE, # TODO match TESL codes to ESdat codes
-             Parent_Sample = ifelse(SOURCEID != "" | !is.na(SOURCEID), paste0(lab_report, "_", SOURCEID), ""),
-             SDG = lab_report, # Required
-             Lab_Name = "TESL", # Required
-             Lab_SampleID = LABSAMPID, # Required
-             #Lab_Comments = "",
-             Lab_Report_Number = lab_report, # Required
-             .keep = "none")
-    
-    sample <- full_join(sample, qcsample)
+             Depth = "",
+             Location_Code = ifelse(Field_ID == "", "", 
+                                    str_extract(Field_ID, paste0(locations, collapse = "|"))),
+             Sample_Type = case_when(grepl("DUP", Field_ID) ~ "Field_D", 
+                                     grepl("QA", Field_ID) ~ "Field_B",
+                                     grepl("BLK", Sample_Type) ~ "MB",
+                                     grepl("DUP", Sample_Type) ~ "LAB_D",
+                                     grepl("MS", Sample_Type) ~ "MS",
+                                     grepl("SRM|MRL|CCV|CAL|LCV|SCV|IBL", Sample_Type) ~ "SRM",
+                                     grepl("BS", Sample_Type) ~ "LCS",
+                                     .default = "Normal"), # Required
+             Lab_Report_Number = lab_report
+             ) %>%
+      distinct(SampleCode, Sampled_Date_Time, Sample_Type, .keep_all = TRUE)
     
   # Export Sample file
-    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"), na = "")
   
   # Chemistry CSV dataframe building
-    chemistry <- df %>%
-      mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
-             ChemCode = CASNUMBER, # Required
-             OriginalChemName = ANALYTE, # Required
-             Prefix = "",
-             Result = Result, # Required
-             Result_Unit = UNITS, # Required
-             #Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
-             Result_Type = "REG", # Required
-             Method_Type = METHODCODE, # Required
-             Method_Name = METHODNAME, # Required
-             Extraction_Method = PREPNAME,
-             Extraction_Date = PREPDATE,
-             Anaysed_Date = mdy_hm(ANADATE),
-             Lab_Analysis_ID = LABSAMPID, # Required
-             Lab_Preperation_Batch_ID = "", # Required
-             Lab_Analysis_Batch_ID = "", # Required
-             EQL = RL, # Required
-             RDL = RL,
-             MDL = DL,
-             #ODL = "",
-             Detection_Limit_Units = UNITS, # Required
-             Lab_Comments = "",
-             Lab_Qualifier = LNOTE,
-             # UCL = "",
-             # LCL = "",
-             Dilution_Factor = DILUTION,
-             # Spike_Concentration = "",
-             # Spike_Measurement = "",
-             # Spike_Units = "",
-             .keep = "none")
+    chemistry <- chemistry %>%
+      mutate(Prefix = ifelse(Result == "ND", "<", ""),
+             Result = ifelse(Result == "ND", EQL, Result), # Required
+             Total_or_Filtered = as.character(if_else(grepl("Dissolved", OriginalChemName)|OriginalChemName=="Phosphate, Ortho", "F", "T")),
+             Extraction_Date = mdy_hms(Extraction_Date),
+             Analysed_Date = mdy_hms(Analysed_Date),
+             Lab_Analysis_ID = SampleCode,
+             Lab_Qualifier = ifelse(Result == "ND", paste0("U", Lab_Qualifier), Lab_Qualifier),
+             Lab_Report_Number = lab_report
+             ) %>%
+      select(-grep("Result_Type", names(chemistry), value = TRUE))
     
-    qcchem <- qc %>%
-      mutate(SampleCode = paste0(lab_report, "_", LABSAMPID), # Required
-             ChemCode = CASNUMBER, # Required
-             OriginalChemName = ANALYTE, # Required
-             Prefix = "",
-             Result = Result, # Required
-             Result_Unit = UNITS, # Required
-             #Total_or_Filtered = if_else(grepl("Dissolved", Parameter.Name), "F", "T"),
-             Result_Type = ifelse(SURROGATE == TRUE, "SUR", "REG"), # Required
-             Method_Type = METHODCODE, # Required
-             Method_Name = METHODNAME, # Required
-             Extraction_Method = PREPNAME,
-             Extraction_Date = PREPDATE,
-             Anaysed_Date = mdy_hm(ANADATE),
-             Lab_Analysis_ID = LABSAMPID, # Required
-             Lab_Preperation_Batch_ID = "", # Required
-             Lab_Analysis_Batch_ID = "", # Required
-             EQL = RL, # Required
-             RDL = RL,
-             MDL = DL,
-             #ODL = "",
-             Detection_Limit_Units = UNITS, # Required
-             Lab_Comments = "",
-             Lab_Qualifier = LNOTE,
-             UCL = UPPERCL,
-             LCL = LOWERCL,
-             Dilution_Factor = DILUTION,
-             Spike_Concentration = SPIKELEVEL,
-             Spike_Measurement = RECOVERY,
-             Spike_Units = "%",
-             .keep = "none")
-    
-    # TODO update chem code lookup with TESL values
-    chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%
-      mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
-      select(-c(ChemCode.x, ChemCode.y))
+    chemistry <- left_join(chemistry, chem_codes) %>%
+      mutate(Result_Type = case_when(Result_Type == "SUR"~"SUR",
+                                     grepl("-BS", SampleCode)~"SC",
+                                     .default = "REG"))
     
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"), na = "")
   }
   
 ## Import PDF lab reports and copy to secondary folder

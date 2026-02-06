@@ -1,5 +1,5 @@
 ## ---------------------------
-## Script name:         ESdat_prep.R  
+## Script name:         ESdat_prep.R
 ## Purpose of script:   Exports zipped folders with ESdat header and files from original KCEL EDD
 ## Author:              N. Harris
 ## Date Created:        2024-08-22
@@ -10,7 +10,7 @@
 ## Notes: This script is ran in conjunction with the ESdat_header.R and KCEL_to_ESdat.R scripts
 ##
 ##    *** Have you updated the config.yaml file? Please do so before running any scripts ***
-##        
+##
 ## ---------------------------
 
 ## Required Packages (install as necessary)
@@ -19,7 +19,10 @@
   library(zip)
 
 ## Run other scripts
-  source("ESdat-Converter-Tools/supporting-scripts/TESL/TESL_to_ESdat_update.R", local = T)
+  source(
+    "ESdat-Converter-Tools/supporting-scripts/TESL/TESL_to_ESdatR",
+    local = T
+  )
   source("ESdat-Converter-Tools/supporting-scripts/TESL/ESdat_header.R", local = T)
 
 ## Copy relevant files to lab report folders and zip files
@@ -39,4 +42,3 @@
   }
 
 
-    
