@@ -24,13 +24,13 @@
 
 ## Import files
   # Raw files
-  files <- list.files("data/TESL_single/data_raw", full.names = TRUE, pattern = "*.xls")
+  files <- list.files("data/TESL/data_raw", full.names = TRUE, pattern = "*.xls")
   # sample data
   sampdata <- lapply(files, function(files)read_xls(files, sheet = "SAMPDATA"))
   # qc sample data
   qcdata <- lapply(files, function(files)read_xls(files, sheet = "QCDATA"))
   # Chem codes
-  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL_single/chem_code_lookup.csv") # TODO update original chem names with TESL values
+  chem_codes <- read.csv("ESdat-Converter-Tools/supporting-scripts/TESL/chem_code_lookup.csv") # TODO update original chem names with TESL values
 
 ## Import config.yaml file
   config        <- read_yaml("ESdat-Converter-Tools/supporting-scripts/TESL_single/config.yaml")
@@ -42,7 +42,7 @@
   #   filter(Site_ID == proj_site)
   
 ## Retrieve lab report names
-  lab_reports <- substring(list.files("data/TESL_single/data_raw", pattern = "*.xls"), 1, 7) # TODO adjust to TESL report names
+  lab_reports <- substring(list.files("data/TESL/data_raw", pattern = "*.xls"), 1, 7) # TODO adjust to TESL report names
 
 ## Iterate through lab reports and create Sample and Chemistry CSV files
   for(i in 1:length(files)){
@@ -92,7 +92,7 @@
     sample <- full_join(sample, qcsample)
     
   # Export Sample file
-    write.csv(sample, paste0("data/TESL_single/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
+    write.csv(sample, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatSample.csv"))
   
   # Chemistry CSV dataframe building
     chemistry <- df %>%
@@ -160,12 +160,17 @@
              .keep = "none")
     
     # TODO update chem code lookup with TESL values
-    chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE) %>%
+    chemistry <- merge(chemistry, chem_codes, by = "OriginalChemName", all.x = TRUE, all.y = FALSE) %>%
       mutate(ChemCode = ChemCode.y, .after = SampleCode) %>%
       select(-c(ChemCode.x, ChemCode.y))
     
+    chemistry$Result_Type <- ifelse(chemistry$Result_Type.y == "SUR" & !is.na(chemistry$Result_Type.y), "SUR", "REG")
+    
+    chemistry <- chemistry %>%
+      select(-c(Result_Type.x, Result_Type.y))
+  
   # Export Chemistry file
-    write.csv(chemistry, paste0("data/TESL_single/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
+    write.csv(chemistry, paste0("data/TESL/data_secondary/", proj_num, ".", lab_report, ".ESdatChemistry.csv"))
   }
   
 ## Import PDF lab reports and copy to secondary folder
